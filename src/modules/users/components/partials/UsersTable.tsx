@@ -31,6 +31,11 @@ const UsersTable = () => {
       flex: 1,
     },
     {
+      field: 'otp',
+      headerName: "code",
+      flex: 1,
+    },
+    {
       field: 'roles',
       headerName: t('user:list.role'),
       type: 'boolean',
@@ -62,6 +67,7 @@ const UsersTable = () => {
     return {
       id: item.id,
       email: item.email,
+      otp: item.otp || "-----",
       createdAt: item.createdAt,
       roles: item.rolesNames,
     };

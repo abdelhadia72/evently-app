@@ -121,11 +121,15 @@ const Leftbar = (props: LeftbarProps) => {
             width: LEFTBAR_WIDTH,
             bgcolor: 'background.default',
             borderRightStyle: 'dashed',
-            marginTop: 0.5,
+            marginTop: '64px', 
+            height: 'calc(100% - 64px)',
             px: 2.5,
           },
         }}
         sx={{
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
+          },
           display: open ? 'block' : 'none',
         }}
       >

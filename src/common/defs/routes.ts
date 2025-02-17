@@ -6,6 +6,9 @@ const Common = {
   Landing: '/',
   // Dashboard: '/dashboard',
   Home: '/dashboard',
+  overview: '/dashboard/overview',
+  events: '/dashboard/events',
+  users: '/dashboard/users',
   NotFound: '/404',
 };
 

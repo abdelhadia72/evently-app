@@ -11,22 +11,22 @@ export const menuItems: NavGroup[] = [
       {
         text: 'Dashboard',
         icon: <icons.dashboard />,
-        link: Routes.Common.Home,
+        link: '/dashboard/overview',
       },
       {
         text: 'Manage Users',
         icon: <icons.users />,
-        link: Routes.Common.Home,
+        link: '/dashboard/users',
       },
       {
         text: 'Manage Events',
         icon: <icons.event />,
-        link: Routes.Common.Home,
+        link: '/dashboard/events',
       },
       {
         text: 'Support',
         icon: <icons.chat />,
-        link: Routes.Common.Home,
+        link: '/dashboard/support',
       },
 
       {

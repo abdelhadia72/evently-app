@@ -96,15 +96,14 @@ const Topbar = () => {
 
   return (
     <AppBar
-      position="static"
+      position="fixed"
       sx={{
         boxShadow: (theme) => theme.customShadows.z1,
         backgroundColor: 'common.white',
-        ml: { sm: `240px` },
-        width: { sm: `calc(100% - 240px)` },
+        zIndex: (theme) => theme.zIndex.drawer + 1
       }}
     >
-      <Container>
+      <Container maxWidth={false}>
         <Toolbar sx={{ px: { xs: 0, sm: 0 } }}>
           <Stack flexDirection="row" alignItems="center" flexGrow={1} />
           <List sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>

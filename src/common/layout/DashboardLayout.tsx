@@ -13,24 +13,31 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const theme = useTheme();
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+    <Box sx={{ display: 'flex' }}>
       <Leftbar open={openLeftbar} onToggle={(open) => setOpenLeftbar(open)} />
-      <Topbar />
-
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           minHeight: '100vh',
           width: '100%',
-          paddingTop: '24px',
-          paddingX: theme.spacing(2),
-          transition: theme.transitions.create('margin', {
-            duration: theme.transitions.duration.complex,
+          backgroundColor: 'background.default',
+          marginTop: '64px',
+          transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
           }),
-          marginLeft: openLeftbar ? '260px' : 0,
+          ...(openLeftbar && {
+            marginLeft: '260px',
+            width: `calc(100% - 260px)`,
+            transition: theme.transitions.create(['margin', 'width'], {
+              easing: theme.transitions.easing.easeOut,
+              duration: theme.transitions.duration.enteringScreen,
+            }),
+          }),
         }}
       >
+        <Topbar />
         {children}
       </Box>
     </Box>
