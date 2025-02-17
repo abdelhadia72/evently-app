@@ -3,7 +3,9 @@ import Users from '@modules/users/defs/routes';
 import Permissions from '@modules/permissions/defs/routes';
 
 const Common = {
-  Home: '/',
+  Landing: '/',
+  // Dashboard: '/dashboard',
+  Home: '/dashboard',
   NotFound: '/404',
 };
 

@@ -1,25 +1,26 @@
-import PageHeader from '@common/components/lib/partials/PageHeader';
-import Routes from '@common/defs/routes';
-import withAuth, { AUTH_MODE } from '@modules/auth/hocs/withAuth';
 import { NextPage } from 'next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { useTranslation } from 'react-i18next';
+import Hero from '@modules/landing/sections/Hero';
+import Features from '@modules/landing/sections/Features';
+import Pricing from '@modules/landing/sections/Pricing';
+import Contact from '@modules/landing/sections/Contact';
 
-const Index: NextPage = () => {
-  const { t } = useTranslation(['home']);
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+
+const LandingPage: NextPage = () => {
   return (
     <>
-      <PageHeader title={t('home:dashboard')} />
+      <Hero />
+      <Features />
+      <Pricing />
+      <Contact />
     </>
   );
 };
 
 export const getStaticProps = async ({ locale }: { locale: string }) => ({
   props: {
-    ...(await serverSideTranslations(locale, ['topbar', 'footer', 'leftbar', 'home'])),
+    ...(await serverSideTranslations(locale, ['landing', 'common'])),
   },
 });
-export default withAuth(Index, {
-  mode: AUTH_MODE.LOGGED_IN,
-  redirectUrl: Routes.Auth.Login,
-});
+
+export default LandingPage;
