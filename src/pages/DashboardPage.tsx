@@ -11,9 +11,8 @@ const DashboardPage = () => {
       </Box>
 
       <Grid container spacing={3}>
-        {/* Add your dashboard widgets/cards here */}
         <Grid item xs={12} sm={6} md={3}>
-          {/* Example Widget */}
+          Somethisn here{' '}
         </Grid>
       </Grid>
     </Container>
