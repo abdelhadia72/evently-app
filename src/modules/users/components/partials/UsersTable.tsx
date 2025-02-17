@@ -30,6 +30,7 @@ const UsersTable = () => {
       headerName: t('user:list.email'),
       flex: 1,
     },
+      
     {
       field: 'otp',
       headerName: "code",
@@ -37,16 +38,19 @@ const UsersTable = () => {
     },
     {
       field: 'roles',
-      headerName: t('user:list.role'),
+      headerName: "Role",
       type: 'boolean',
       width: 125,
       renderCell: (params) => {
         const { row: item } = params;
         const { roles } = item;
         if (roles.includes('admin')) {
-          return <CheckCircleIcon color="success" />;
+          return "Admin";
         }
-        return <CancelIcon color="error" />;
+         if (roles.includes('organizer')) {
+                  return "Organizer";
+        }
+        return "User";
       },
     },
     {
