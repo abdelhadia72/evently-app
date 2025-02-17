@@ -1,4 +1,5 @@
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
+import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
 import Routes from '@common/defs/routes';
 import {
   AppBar,
@@ -14,6 +15,7 @@ import {
   ListItemText,
   Toolbar,
   styled,
+  Avatar,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useRouter } from 'next/router';
@@ -23,89 +25,50 @@ import Stack from '@mui/material/Stack';
 import Logo from '@common/assets/svgs/Logo';
 import { ArrowForwardIos, Logout } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import Link from 'next/link';
-import { setUserLanguage } from '@common/components/lib/utils/language';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 interface TopbarItem {
   label: string;
   link?: string;
   onClick?: () => void;
-  dropdown?: Array<{
-    label: string;
-    link?: string;
-    value?: string;
-    onClick?: () => void;
-  }>;
 }
 
 const Topbar = () => {
   const { t } = useTranslation(['topbar']);
   const router = useRouter();
-  const { asPath } = router;
   const [showDrawer, setShowDrawer] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
   const { user, logout } = useAuth();
 
-  const dropdownWidth = 137;
-  const toggleSidebar = () => {
-    setShowDrawer((oldValue) => !oldValue);
-  };
-  const navItems: TopbarItem[] = [
-    {
-      label: t('topbar:home'),
-      link: Routes.Common.Home,
-      onClick: () => router.push(Routes.Common.Home),
-    },
-    {
-      label: t('topbar:language'),
-      dropdown: [
-        {
-          label: t('topbar:language_french'),
-          link: asPath,
-          value: 'fr',
-        },
-        {
-          label: t('topbar:language_english'),
-          link: `${asPath}`,
-          value: 'en',
-        },
-        {
-          label: t('topbar:language_spanish'),
-          link: `${asPath}`,
-          value: 'es',
-        },
-      ],
-    },
-    {
-      label: 'Utilisateur',
-      dropdown: [
-        {
-          label: 'Mon Profil',
-          link: Routes.Users.Me,
-          onClick: () => router.push(Routes.Users.Me),
-        },
-        {
-          label: 'Déconnexion',
-          onClick: () => logout(),
-        },
-      ],
-    },
-  ];
-
-  const toggleDropdown = () => {
-    setShowDropdown((oldValue) => !oldValue);
-  };
+  const navItems: TopbarItem[] = [];
 
   const onNavButtonClick = (item: TopbarItem) => {
-    if (item.dropdown) {
-      return toggleDropdown;
-    }
     return () => {
       setShowDrawer(false);
       if (item.onClick) {
         item.onClick();
       }
     };
+  };
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleProfileClick = () => {
+    handleClose();
+    router.push(Routes.Users.Me);
+  };
+
+  const handleLogoutClick = () => {
+    handleClose();
+    logout();
   };
 
   const onAuthButtonClick = (mode: string) => {
@@ -117,7 +80,6 @@ const Topbar = () => {
         return router.push(Routes.Auth.Register);
       }
     }
-    // if login coming from any other page then add url query param to redirect back to the same page after login
     if (mode === 'login') {
       router.push({
         pathname: Routes.Auth.Login,
@@ -138,128 +100,38 @@ const Topbar = () => {
       sx={{
         boxShadow: (theme) => theme.customShadows.z1,
         backgroundColor: 'common.white',
+        ml: { sm: `240px` },
+        width: { sm: `calc(100% - 240px)` },
       }}
     >
       <Container>
         <Toolbar sx={{ px: { xs: 0, sm: 0 } }}>
-          <Stack flexDirection="row" alignItems="center" flexGrow={1}>
-            <Logo
-              id="topbar-logo"
-              onClick={() => router.push(Routes.Common.Home)}
-              sx={{ cursor: 'pointer' }}
-            />
-          </Stack>
+          <Stack flexDirection="row" alignItems="center" flexGrow={1} />
           <List sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
+            {/* Home Link  */}
             <>
-              {navItems.map((item, index) => {
-                if (item.label === 'Utilisateur') {
-                  return null;
-                }
-                return (
-                  <ListItem
-                    key={index}
+              {navItems.map((item, index) => (
+                <ListItem
+                  key={index}
+                  sx={{
+                    width: 'fit-content',
+                  }}
+                >
+                  <StyledListItemButton
                     sx={{
-                      width: 'fit-content',
+                      ...(router.pathname === item.link && {
+                        color: 'primary.main',
+                      }),
                     }}
+                    onClick={onNavButtonClick(item)}
                   >
-                    <StyledListItemButton
-                      sx={{
-                        ...(router.pathname === item.link && {
-                          color: 'primary.main',
-                        }),
-                        ...(item.dropdown && {
-                          borderTopLeftRadius: 24,
-                          borderTopRightRadius: 24,
-                          borderBottomLeftRadius: 0,
-                          borderBottomRightRadius: 0,
-                          width: dropdownWidth,
-                          display: 'flex',
-                          alignItems: 'center',
-                          '&:hover': {
-                            backgroundColor: 'transparent',
-                            boxShadow: (theme) => theme.customShadows.z12,
-                            '.MuiTypography-root': {
-                              fontWeight: 'bold',
-                            },
-                            '.dropdown-menu': {
-                              visibility: 'visible',
-                            },
-                            '.MuiTouchRipple-child': {
-                              backgroundColor: 'transparent',
-                            },
-                          },
-                        }),
-                      }}
-                      onClick={onNavButtonClick(item)}
-                    >
-                      {!item.dropdown ? (
-                        <>{item.label}</>
-                      ) : (
-                        <>
-                          <ListItemText>{item.label}</ListItemText>
-                          <KeyboardArrowDown />
-                          <List
-                            className="dropdown-menu"
-                            sx={{
-                              backgroundColor: 'common.white',
-                              boxShadow: (theme) => theme.customShadows.z12,
-                              position: 'absolute',
-                              top: 48,
-                              left: 0,
-                              padding: 0,
-                              width: dropdownWidth,
-                              borderBottomLeftRadius: 24,
-                              borderBottomRightRadius: 24,
-                              visibility: 'hidden',
-                              zIndex: 1000000,
-                            }}
-                          >
-                            {item.dropdown.map((dropdownItem, dropdownItemIndex) => {
-                              return (
-                                <ListItem
-                                  key={dropdownItemIndex}
-                                  sx={{
-                                    padding: 0,
-                                    display: 'unset',
-                                  }}
-                                >
-                                  <Link href={dropdownItem.link!} locale={dropdownItem.value}>
-                                    <ListItemButton
-                                      sx={{
-                                        display: 'flex',
-                                        gap: 1,
-                                        paddingX: 2,
-                                        paddingY: 1.5,
-                                        borderRadius: 0,
-                                        zIndex: 1000000,
-                                        '&:hover': {
-                                          backgroundColor: 'primary.dark',
-                                          color: 'primary.contrastText',
-                                        },
-                                        ...(item.dropdown?.length === dropdownItemIndex + 1 && {
-                                          borderBottomLeftRadius: 24,
-                                          borderBottomRightRadius: 24,
-                                        }),
-                                      }}
-                                      onClick={() => {
-                                        onNavButtonClick(dropdownItem);
-                                        setUserLanguage(dropdownItem.value!);
-                                      }}
-                                    >
-                                      {dropdownItem.label}
-                                    </ListItemButton>
-                                  </Link>
-                                </ListItem>
-                              );
-                            })}
-                          </List>
-                        </>
-                      )}
-                    </StyledListItemButton>
-                  </ListItem>
-                );
-              })}
+                    {item.label}
+                  </StyledListItemButton>
+                </ListItem>
+              ))}
             </>
+            {/* Notifications */}
+            <NotificationsRoundedIcon sx={{ color: 'black' }} />
             {!user ? (
               <>
                 <ListItem
@@ -307,100 +179,37 @@ const Topbar = () => {
                 </ListItem>
               </>
             ) : (
-              <>
-                <ListItem
-                  key="user-options"
-                  sx={{
-                    width: 'fit-content',
+              <ListItem sx={{ width: 'fit-content' }}>
+                <Button
+                  id="basic-button"
+                  aria-controls={open ? 'basic-menu' : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? 'true' : undefined}
+                  onClick={handleClick}
+                  onMouseEnter={handleClick}
+                >
+                  <Avatar>AB</Avatar>
+                </Button>
+
+                <Menu
+                  id="basic-menu"
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleClose}
+                  MenuListProps={{
+                    'aria-labelledby': 'basic-button',
                   }}
                 >
-                  <StyledListItemButton
-                    sx={{
-                      borderTopLeftRadius: 24,
-                      borderTopRightRadius: 24,
-                      borderBottomLeftRadius: 0,
-                      borderBottomRightRadius: 0,
-                      width: 160,
-                      display: 'flex',
-                      alignItems: 'center',
-                      '&:hover': {
-                        backgroundColor: 'transparent',
-                        boxShadow: (theme) => theme.customShadows.z12,
-                        '.MuiTypography-root': {
-                          fontWeight: 'bold',
-                        },
-                        '.dropdown-menu': {
-                          visibility: 'visible',
-                        },
-                        '.MuiTouchRipple-child': {
-                          backgroundColor: 'transparent',
-                        },
-                      },
-                    }}
-                  >
-                    <>
-                      <ListItemText>{navItems[2].label}</ListItemText>
-                      <KeyboardArrowDown />
-                      <List
-                        className="dropdown-menu"
-                        sx={{
-                          backgroundColor: 'common.white',
-                          boxShadow: (theme) => theme.customShadows.z12,
-                          position: 'absolute',
-                          top: 48,
-                          left: 0,
-                          width: 160,
-                          padding: 0,
-                          borderBottomLeftRadius: 24,
-                          borderBottomRightRadius: 24,
-                          visibility: 'hidden',
-                          zIndex: 1000000,
-                        }}
-                      >
-                        {navItems[2].dropdown?.map((dropdownItem, dropdownItemIndex) => {
-                          return (
-                            <ListItem
-                              key={dropdownItemIndex}
-                              sx={{
-                                padding: 0,
-                              }}
-                            >
-                              <ListItemButton
-                                sx={{
-                                  ...(router.pathname === dropdownItem.link && {
-                                    color: 'primary.main',
-                                  }),
-                                  display: 'flex',
-                                  gap: 1,
-                                  paddingX: 2,
-                                  paddingY: 1.5,
-                                  borderRadius: 0,
-                                  zIndex: 1000000,
-                                  '&:hover': {
-                                    backgroundColor: 'primary.dark',
-                                    color: 'primary.contrastText',
-                                  },
-                                  ...(navItems[2].dropdown?.length === dropdownItemIndex + 1 && {
-                                    borderBottomLeftRadius: 24,
-                                    borderBottomRightRadius: 24,
-                                  }),
-                                }}
-                                onClick={onNavButtonClick(dropdownItem)}
-                              >
-                                {dropdownItem.label}
-                              </ListItemButton>
-                            </ListItem>
-                          );
-                        })}
-                      </List>
-                    </>
-                  </StyledListItemButton>
-                </ListItem>
-              </>
+                  <MenuItem onClick={handleProfileClick}>Profile</MenuItem>
+                  <MenuItem sx={{ color: 'error.main' }} onClick={handleLogoutClick}>
+                    Logout
+                  </MenuItem>
+                </Menu>
+              </ListItem>
             )}
           </List>
           <IconButton
-            onClick={() => toggleSidebar()}
+            onClick={() => setShowDrawer(true)}
             sx={{
               display: { md: 'none', sm: 'flex' },
             }}
@@ -429,109 +238,49 @@ const Topbar = () => {
           >
             <Logo id="responsive-topbar-logo" />
           </Box>
-          {navItems.map((item, index) => {
-            if (item.label === 'Utilisateur') {
-              return null;
-            }
-            return (
-              <ListItem
-                key={index}
-                disablePadding
+          {navItems.map((item, index) => (
+            <ListItem key={index} disablePadding>
+              <ListItemButton
+                onClick={onNavButtonClick(item)}
                 sx={{
-                  ...(item.dropdown && {
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }),
+                  width: '100%',
                 }}
               >
-                <ListItemButton
-                  onClick={!item.dropdown ? onNavButtonClick(item) : toggleDropdown}
-                  sx={{
-                    width: '100%',
+                <ListItemText
+                  primaryTypographyProps={{
+                    ...(router.pathname === item.link && {
+                      color: 'primary.main',
+                    }),
                   }}
                 >
-                  <ListItemText
-                    primaryTypographyProps={{
-                      ...(router.pathname === item.link && {
-                        color: 'primary.main',
-                      }),
-                    }}
-                  >
-                    {item.label}
-                  </ListItemText>
-                  {item.dropdown && (
-                    <ListItemIcon color="grey.800" sx={{ minWidth: 'unset' }}>
-                      <KeyboardArrowDown sx={{ color: 'grey.800' }} />
-                    </ListItemIcon>
-                  )}
-                </ListItemButton>
-                {item.dropdown && (
-                  <List
-                    sx={{
-                      width: '100%',
-                      transition: 'all, 0.2s',
-                      height: 0,
-                      paddingY: 0,
-                      ...(showDropdown && {
-                        height: `calc(${item.dropdown.length} * 48px)`,
-                      }),
-                    }}
-                    className="dropdown-list"
-                  >
-                    {item.dropdown.map((dropdownItem, dropdownItemIndex) => {
-                      return (
-                        <ListItem
-                          key={dropdownItemIndex}
-                          sx={{
-                            padding: 0,
-                            visibility: 'hidden',
-                            ...(showDropdown && {
-                              visibility: 'visible',
-                            }),
-                            display: 'unset',
-                          }}
-                        >
-                          <Link href={dropdownItem.link!} locale={dropdownItem.value}>
-                            <ListItemButton
-                              onClick={() => {
-                                onNavButtonClick(dropdownItem);
-                                setUserLanguage(dropdownItem.value!);
-                              }}
-                              sx={{
-                                display: 'flex',
-                                gap: 1,
-                                paddingLeft: 4,
-                              }}
-                            >
-                              <ListItemText>{dropdownItem.label}</ListItemText>
-                            </ListItemButton>
-                          </Link>
-                        </ListItem>
-                      );
-                    })}
-                  </List>
-                )}
-              </ListItem>
-            );
-          })}
-          <ListItem key="profile" disablePadding>
-            <ListItemButton
-              onClick={() => router.push(Routes.Users.Me)}
-              sx={{
-                width: '100%',
-              }}
-            >
-              <ListItemText
-                primaryTypographyProps={{
-                  ...(router.pathname === Routes.Users.Me && {
-                    color: 'primary.main',
-                  }),
+                  {item.label}
+                </ListItemText>
+              </ListItemButton>
+            </ListItem>
+          ))}
+          {user && (
+            <ListItem key="profile" disablePadding>
+              <ListItemButton
+                onClick={() => {
+                  setShowDrawer(false);
+                  router.push(Routes.Users.Me);
+                }}
+                sx={{
+                  width: '100%',
                 }}
               >
-                Mon Profil
-              </ListItemText>
-            </ListItemButton>
-          </ListItem>
+                <ListItemText
+                  primaryTypographyProps={{
+                    ...(router.pathname === Routes.Users.Me && {
+                      color: 'primary.main',
+                    }),
+                  }}
+                >
+                  Mon Profil
+                </ListItemText>
+              </ListItemButton>
+            </ListItem>
+          )}
           {!user ? (
             <>
               <ListItem

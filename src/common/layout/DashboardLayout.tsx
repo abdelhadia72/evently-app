@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import Leftbar from '@common/layout/Leftbar';
 import { useTheme } from '@mui/material/styles';
+import Topbar from './Topbar';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -14,6 +15,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
       <Leftbar open={openLeftbar} onToggle={(open) => setOpenLeftbar(open)} />
+      <Topbar />
 
       <Box
         component="main"
