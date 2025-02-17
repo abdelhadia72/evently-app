@@ -31,7 +31,7 @@ const CreateUserForm = (_props: CreateUserFormProps) => {
   const defaultValues: CreateOneInput = {
     email: '',
     password: '',
-    role: ROLE.USER,
+    role: ROLE.ATTENDEE,
   };
   const onPostSubmit = async (
     _data: CreateOneInput,

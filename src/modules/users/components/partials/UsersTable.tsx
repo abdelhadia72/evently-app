@@ -30,7 +30,11 @@ const UsersTable = () => {
       headerName: t('user:list.email'),
       flex: 1,
     },
-      
+       {
+      field: 'is_verified',
+      headerName: 'Verified',
+      flex: 1,
+    },
     {
       field: 'otp',
       headerName: "code",
@@ -72,6 +76,7 @@ const UsersTable = () => {
       id: item.id,
       email: item.email,
       otp: item.otp || "-----",
+      is_verified: item.is_verified == '1' ? 'Verified' : 'Not Verified',
       createdAt: item.createdAt,
       roles: item.rolesNames,
     };
