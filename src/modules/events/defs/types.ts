@@ -7,6 +7,9 @@ export interface Event {
   location: string;
   organizerId: number;
   maxAttendees: number;
+  category: string;
+  status: string;
+  imageUrl?: string;
 }
 
 export interface CreateEventInput {
@@ -15,7 +18,12 @@ export interface CreateEventInput {
   maxAttendees: number;
   description: string;
   startDate: string;
+  startTime?: string;
   endDate: string;
+  endTime?: string;
+  category: string;
+  status: string;
+  imageUrl?: string;
 }
 
 export interface UpdateEventInput extends Partial<CreateEventInput> {

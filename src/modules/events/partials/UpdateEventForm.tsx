@@ -48,14 +48,18 @@ const UpdateEventForm = (props: UpdateEventFormProps) => {
     maxAttendees: Yup.number()
       .min(1, t('common:min_value', { min: 1 }))
       .required(t('common:field_required')),
-  startDate: Yup.string().required(t('common:field_required')),
+    startDate: Yup.string().required(t('common:field_required')),
+    startTime: Yup.string().required(t('common:field_required')),
     endDate: Yup.string()
       .required(t('common:field_required'))
       .test('is-after-start', t('event:end_date_after_start'), function(value) {
-        const { startDate } = this.parent;
+        const { startDate, startTime, endTime } = this.parent;
         if (!startDate || !value) return true;
-        return new Date(value) > new Date(startDate);
+        const startDateTime = dayjs(`${startDate} ${startTime}`);
+        const endDateTime = dayjs(`${value} ${endTime}`);
+        return endDateTime.isAfter(startDateTime);
       }),
+    endTime: Yup.string().required(t('common:field_required')),
     category: Yup.string().required(t('common:field_required')),
     status: Yup.string().required(t('common:field_required')),
     imageUrl: Yup.string().url(t('common:invalid_url')),
@@ -68,54 +72,71 @@ const UpdateEventForm = (props: UpdateEventFormProps) => {
     location: item.location,
     maxAttendees: item.maxAttendees,
     startDate: dayjs(item.startDate).format('YYYY-MM-DD'),
+    startTime: dayjs(item.startDate).format('HH:mm'),
     endDate: dayjs(item.endDate).format('YYYY-MM-DD'),
+    endTime: dayjs(item.endDate).format('HH:mm'),
     category: item.category,
     status: item.status,
     imageUrl: item.imageUrl,
   };
 
+  const handleSubmit = (data: UpdateEventInput) => {
+    const updatedData = {
+      ...data,
+      startDate: `${data.startDate} ${data.startTime}`,
+      endDate: `${data.endDate} ${data.endTime}`,
+    };
+    delete updatedData.startTime;
+    delete updatedData.endTime;
+    
+    return {
+      data: updatedData
+    };
+  };
+
   return (
-          <UpdateCrudItemForm<Event, UpdateEventInput>
-        item={item}
-        routes={Routes.Events}
-        useItems={useEvents}
-        schema={schema}
-        defaultValues={defaultValues}
-      >
-        <Grid container spacing={3} sx={{ padding: 6 }}>
-          <Grid item xs={12} md={6}>
-            <RHFTextField name="title" label={t('event:title')} />
+    <UpdateCrudItemForm<Event, UpdateEventInput>
+      item={item}
+      routes={Routes.Events}
+      useItems={useEvents}
+      schema={schema}
+      defaultValues={defaultValues}
+      onPreSubmit={handleSubmit}
+    >
+      <Grid container spacing={3} sx={{ padding: 6 }}>
+        <Grid item xs={12} md={6}>
+          <RHFTextField name="title" label={t('event:title')} />
         </Grid>
         <Grid item xs={12} md={6}>
           <RHFTextField name="location" label={t('event:location')} />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <RHFTextField 
-name="maxAttendees" 
-label={t('event:maxAttendees')}
-type="number"
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <RHFTextField 
+            name="maxAttendees" 
+            label={t('event:maxAttendees')}
+            type="number"
             inputProps={{ min: 1 }}
-/>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <RHFSelect name="category" label={t('event:category')}>
-              {CATEGORIES.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </RHFSelect>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <RHFSelect name="status" label={t('event:status')}>
-              {STATUS_OPTIONS.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </RHFSelect>
-          </Grid>
-<Grid item xs={12} md={6}>
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <RHFSelect name="category" label={t('event:category')}>
+            {CATEGORIES.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </RHFSelect>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <RHFSelect name="status" label={t('event:status')}>
+            {STATUS_OPTIONS.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </RHFSelect>
+        </Grid>
+        <Grid item xs={12} md={6}>
           <RHFTextField 
             name="imageUrl" 
             label={t('event:imageUrl')}
@@ -126,16 +147,38 @@ type="number"
           <RHFTextField 
             name="startDate" 
             label={t('event:startDate')}
-            type="datetime-local"
+            type="date"
             InputLabelProps={{ shrink: true }}
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <RHFTextField 
+            name="startTime" 
+            label={t('event:startTime')}
+            type="time"
+            InputLabelProps={{ shrink: true }}
+            inputProps={{
+              step: 300
+            }}
           />
         </Grid>
         <Grid item xs={12} md={6}>
           <RHFTextField 
             name="endDate" 
             label={t('event:endDate')}
-            type="datetime-local"
+            type="date"
             InputLabelProps={{ shrink: true }}
+          />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <RHFTextField 
+            name="endTime" 
+            label={t('event:endTime')}
+            type="time"
+            InputLabelProps={{ shrink: true }}
+            inputProps={{
+              step: 300
+            }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -146,9 +189,9 @@ type="number"
             rows={4}
           />
         </Grid>
-        </Grid>
-      </UpdateCrudItemForm>
-      );
+      </Grid>
+    </UpdateCrudItemForm>
+  );
 };
 
 export default UpdateEventForm;
