@@ -79,7 +79,8 @@ const EventTable = () => {
       useItems={useEvents}
       itemToRow={itemToRow}
       showEdit={() => true}
-    showDelete={() => true}
+      showDelete={() => true}
+      showLock
       exportable
     />
   );
