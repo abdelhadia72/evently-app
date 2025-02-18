@@ -7,24 +7,29 @@ import { Grid, MenuItem } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import dayjs from 'dayjs';
+import { useSnackbar } from '@common/contexts/SnackbarProvider';
+import { useRouter } from 'next/router';
+import { UseFormReturn } from 'react-hook-form';
+import { ItemResponse } from '@common/hooks/useItems';
 
 const CATEGORIES = [
-  { value: 'tech', label: 'Technology' },
-  { value: 'business', label: 'Business' },
-  { value: 'food', label: 'Food' },
-  { value: 'sports', label: 'Sports' },
-  { value: 'music', label: 'Music' },
-  { value: 'art', label: 'Art' },
-  { value: 'other', label: 'Other' }
+  { value: 'tech', label: 'event:categories.tech' },
+  { value: 'business', label: 'event:categories.business' },
+  { value: 'food', label: 'event:categories.food' },
+  { value: 'sports', label: 'event:categories.sports' },
+  { value: 'music', label: 'event:categories.music' },
+  { value: 'art', label: 'event:categories.art' },
+  { value: 'other', label: 'event:categories.other' }
 ];
 
 const STATUS_OPTIONS = [
-  { value: 'draft', label: 'Draft' },
-  { value: 'published', label: 'Published' }
+  { value: 'draft', label: 'event:statuses.draft' },
+  { value: 'published', label: 'event:statuses.published' }
 ];
 
 const CreateEventForm = () => {
   const { t } = useTranslation(['event', 'common']);
+  const router = useRouter();
 
   const schema = Yup.object().shape({
     title: Yup.string()
@@ -73,6 +78,16 @@ const CreateEventForm = () => {
     imageUrl: '',
   };
 
+  const onPostSubmit = async (
+    _data: CreateEventInput,
+    response: ItemResponse<Event>,
+    _methods: UseFormReturn<CreateEventInput>
+  ) => {
+    if (response.success) {
+      router.push(Routes.Events.ReadAll);
+    }
+  };
+
   const handleSubmit = (data: CreateEventInput) => {
     const updatedData = {
       ...data,
@@ -94,6 +109,7 @@ const CreateEventForm = () => {
       schema={schema}
       defaultValues={defaultValues}
       onPreSubmit={handleSubmit}
+      onPostSubmit={onPostSubmit}
     >
       <Grid container spacing={3} sx={{ padding: 6 }}>
         <Grid item xs={12} md={6}>
@@ -114,7 +130,7 @@ const CreateEventForm = () => {
           <RHFSelect name="category" label={t('event:category')}>
             {CATEGORIES.map((option) => (
               <MenuItem key={option.value} value={option.value}>
-                {option.label}
+                {t(option.label)}
               </MenuItem>
             ))}
           </RHFSelect>
@@ -123,7 +139,7 @@ const CreateEventForm = () => {
           <RHFSelect name="status" label={t('event:status')}>
             {STATUS_OPTIONS.map((option) => (
               <MenuItem key={option.value} value={option.value}>
-                {option.label}
+                {t(option.label)}
               </MenuItem>
             ))}
           </RHFSelect>
@@ -146,7 +162,7 @@ const CreateEventForm = () => {
         <Grid item xs={12} md={6}>
           <RHFTextField 
             name="startTime" 
-            label={t('event:startTime')}
+            label={t('event:time')}
             type="time"
             InputLabelProps={{ shrink: true }}
             inputProps={{
@@ -165,7 +181,7 @@ const CreateEventForm = () => {
         <Grid item xs={12} md={6}>
           <RHFTextField 
             name="endTime" 
-            label={t('event:endTime')}
+            label={t('event:time')}
             type="time"
             InputLabelProps={{ shrink: true }}
             inputProps={{

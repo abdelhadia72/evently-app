@@ -17,16 +17,16 @@ const CreateUserForm = (_props: CreateUserFormProps) => {
   const router = useRouter();
   const schema = Yup.object().shape({
     email: Yup.string()
-      .email("Le format de l'email est incorrect")
-      .required('Le champ est obligatoire'),
-    password: Yup.string().required('Le champ est obligatoire'),
+      .email("Invalid email format")
+      .required('This field is required'),
+    password: Yup.string().required('This field is required'),
     role: Yup.mixed<ROLE>()
       .oneOf(Object.values(ROLE), (_values) => {
-        return `Le champ doit avoir l'une des valeurs suivantes : ${ROLES_OPTIONS.map(
+        return `The field must have one of the following values: ${ROLES_OPTIONS.map(
           (option) => option.label
         ).join(', ')}`;
       })
-      .required('Le champ est obligatoire'),
+      .required('This field is required'),
   });
   const defaultValues: CreateOneInput = {
     email: '',
@@ -59,7 +59,7 @@ const CreateUserForm = (_props: CreateUserFormProps) => {
             <RHFTextField name="password" label="Mot de passe" type="password" />
           </Grid>
           <Grid item xs={6}>
-            <RHFSelect name="role" label="Rôle">
+            <RHFSelect name="role" label="Role">
               {ROLES_OPTIONS.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}

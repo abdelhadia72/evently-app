@@ -7,6 +7,10 @@ import { Grid, MenuItem } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import dayjs from 'dayjs';
+import { useSnackbar } from '@common/contexts/SnackbarProvider';
+import { useRouter } from 'next/router';
+import { UseFormReturn } from 'react-hook-form';
+import { ItemResponse } from '@common/hooks/useItems';
 
 interface UpdateEventFormProps {
   item: Event;
@@ -31,6 +35,8 @@ const STATUS_OPTIONS = [
 const UpdateEventForm = (props: UpdateEventFormProps) => {
   const { item } = props;
   const { t } = useTranslation(['event', 'common']);
+  const snackbar = useSnackbar();
+  const router = useRouter();
 
   const schema = Yup.object().shape({
     title: Yup.string()
@@ -80,6 +86,19 @@ const UpdateEventForm = (props: UpdateEventFormProps) => {
     imageUrl: item.imageUrl,
   };
 
+  const onPostSubmit = async (
+    data: UpdateEventInput,
+    response: ItemResponse<Event>,
+    methods: UseFormReturn<UpdateEventInput>
+  ) => {
+    if (response.success) {
+      snackbar.enqueueSnackbar(t('common:item_updated_successfully'), { variant: 'success' });
+      router.push(Routes.Events.ReadAll);
+    } else {
+      snackbar.enqueueSnackbar(response.message || t('common:something_went_wrong'), { variant: 'error' });
+    }
+  };
+
   const handleSubmit = (data: UpdateEventInput) => {
     const updatedData = {
       ...data,
@@ -102,6 +121,7 @@ const UpdateEventForm = (props: UpdateEventFormProps) => {
       schema={schema}
       defaultValues={defaultValues}
       onPreSubmit={handleSubmit}
+      onPostSubmit={onPostSubmit}
     >
       <Grid container spacing={3} sx={{ padding: 6 }}>
         <Grid item xs={12} md={6}>
