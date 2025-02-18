@@ -12,19 +12,12 @@ const Common = {
   NotFound: '/404',
 };
 
-const Events: CrudAppRoutes = {
-  List: '/dashboard/events',
-  Create: '/dashboard/events/create',
-  Edit: '/dashboard/events/:id/edit',
-  Delete: '/dashboard/events/:id',
-};
 
 const Routes = {
   Common,
   Auth,
   Permissions,
   Users,
-  Events,
 };
 
 export default Routes;

@@ -121,9 +121,11 @@ const Leftbar = (props: LeftbarProps) => {
             width: LEFTBAR_WIDTH,
             bgcolor: 'background.default',
             borderRightStyle: 'dashed',
-            marginTop: '64px', 
-            height: 'calc(100% - 64px)',
+            zIndex: 1300,
+            height: '100%',
             px: 2.5,
+            position: 'fixed',
+            top: 0
           },
         }}
         sx={{
@@ -146,7 +148,7 @@ const Leftbar = (props: LeftbarProps) => {
           justifyContent="space-between"
           alignItems="center"
           sx={{
-            py: 3,
+            py: '12px',
             marginBottom: 2,
             borderBottomWidth: 1,
             borderBottomColor: 'grey.300',
@@ -170,7 +172,7 @@ const Leftbar = (props: LeftbarProps) => {
             />
           </IconButton>
         </Stack>
-        {user && (
+        {/* {user && (
           <Box
             sx={{
               display: 'flex',
@@ -191,7 +193,7 @@ const Leftbar = (props: LeftbarProps) => {
               </Typography>
             </Box>
           </Box>
-        )}
+        )} */}
         <Box>
           <List disablePadding>
             {navEntries.map((entry, groupIndex) => (
@@ -278,7 +280,7 @@ const Leftbar = (props: LeftbarProps) => {
               height: 40,
             }}
           >
-            <MenuIcon fontSize="medium" sx={{ color: 'grey.700' }} />
+            {/* <MenuIcon fontSize="medium" sx={{ color: 'grey.700', zIndex: '9999'}} /> */}
           </IconButton>
         </Box>
       )}

@@ -12,6 +12,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [openLeftbar, setOpenLeftbar] = useState(true);
   const theme = useTheme();
 
+  const handleToggle = () => {
+    setOpenLeftbar(!openLeftbar);
+  };
+
   return (
     <Box sx={{ display: 'flex' }}>
       <Leftbar open={openLeftbar} onToggle={(open) => setOpenLeftbar(open)} />
@@ -22,7 +26,6 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           minHeight: '100vh',
           width: '100%',
           backgroundColor: 'background.default',
-          marginTop: '64px',
           transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -37,8 +40,12 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           }),
         }}
       >
-        <Topbar />
-        {children}
+        <Box sx={{ position: 'relative' }}>
+          <Topbar onToggle={handleToggle} />
+        </Box>
+        <Box sx={{ marginTop: '64px', padding: 3 }}>
+          {children}
+        </Box>
       </Box>
     </Box>
   );

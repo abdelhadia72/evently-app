@@ -34,7 +34,11 @@ interface TopbarItem {
   onClick?: () => void;
 }
 
-const Topbar = () => {
+interface TopbarProps {
+  onToggle?: () => void;
+}
+
+const Topbar = ({ onToggle }: TopbarProps) => {
   const { t } = useTranslation(['topbar']);
   const router = useRouter();
   const [showDrawer, setShowDrawer] = useState(false);
@@ -99,12 +103,23 @@ const Topbar = () => {
       position="fixed"
       sx={{
         boxShadow: (theme) => theme.customShadows.z1,
-        backgroundColor: 'common.white',
-        zIndex: (theme) => theme.zIndex.drawer + 1
+        backgroundColor: 'transparent',
+        width: 'fit',
+        height: '64px'
       }}
     >
       <Container maxWidth={false}>
         <Toolbar sx={{ px: { xs: 0, sm: 0 } }}>
+          <IconButton
+            onClick={onToggle}
+            sx={{
+              backgroundColor: 'white',
+              mr: 2,
+              color: 'grey.700'
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
           <Stack flexDirection="row" alignItems="center" flexGrow={1} />
           <List sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
             {/* Home Link  */}
