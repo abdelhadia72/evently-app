@@ -323,7 +323,7 @@ const RowActionCell = <Item, CreateOneInput, UpdateOneInput>(
               router.push(routes.UpdateOne.replace('{id}', id.toString()));
             }}
           >
-            <Edit /> Éditer
+            <Edit /> Edit
           </MenuItem>
         )}
         {enabledActions.map((action, index) => (

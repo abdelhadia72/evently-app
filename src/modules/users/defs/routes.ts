@@ -1,9 +1,9 @@
 import { CrudAppRoutes } from '@common/defs/types';
 
-const prefix = '/users';
+const prefix = '/dashboard/users';
 const Routes: CrudAppRoutes = {
   ReadAll: prefix,
-  Me: prefix + '/me',
+  Me: '/users/me',
   CreateOne: prefix + '/create',
   UpdateOne: prefix + '/{id}',
 };

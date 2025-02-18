@@ -2,41 +2,30 @@ import withAuth, { AUTH_MODE } from '@modules/auth/hocs/withAuth';
 import withPermissions from '@modules/permissions/hocs/withPermissions';
 import { NextPage } from 'next';
 import Routes from '@common/defs/routes';
-import UsersTable from '@modules/users/components/partials/UsersTable';
-import CustomBreadcrumbs from '@common/components/lib/navigation/CustomBreadCrumbs';
-import { useRouter } from 'next/router';
-import { Add } from '@mui/icons-material';
 import PageHeader from '@common/components/lib/partials/PageHeader';
+import CustomBreadcrumbs from '@common/components/lib/navigation/CustomBreadCrumbs';
 import { CRUD_ACTION } from '@common/defs/types';
 import Namespaces from '@common/defs/namespaces';
 import Labels from '@common/defs/labels';
+import CreateUserStepper from '@modules/users/components/partials/CreateUserStepper';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'react-i18next';
 
 const UsersPage: NextPage = () => {
-  const router = useRouter();
-  const { t } = useTranslation(['user']);
+  const { t } = useTranslation(['user', 'common']);
+
   return (
     <>
-      <PageHeader
-        title={t(`user:${Labels.Users.ReadAll}`)}
-        action={{
-          label: t(`user:${Labels.Users.NewOne}`),
-          startIcon: <Add />,
-          onClick: () => router.push(Routes.Users.CreateOne),
-          permission: {
-            entity: Namespaces.Users,
-            action: CRUD_ACTION.CREATE,
-          },
-        }}
-      />
+      <PageHeader title={t(`user:${Labels.Users.CreateNewOne}`)} />
       <CustomBreadcrumbs
         links={[
           { name: t('common:dashboard'), href: Routes.Common.Home },
-          { name: t(`user:${Labels.Users.Items}`) },
+          { name: t(`user:${Labels.Users.Items}`), href: Routes.Users.ReadAll },
+          { name: t(`user:${Labels.Users.NewOne}`) },
         ]}
       />
-      <UsersTable />
+      <CreateUserStepper />
+      {/* <CreateUserForm /> */}
     </>
   );
 };
@@ -51,7 +40,7 @@ export default withAuth(
   withPermissions(UsersPage, {
     requiredPermissions: {
       entity: Namespaces.Users,
-      action: CRUD_ACTION.READ,
+      action: CRUD_ACTION.CREATE,
     },
     redirectUrl: Routes.Permissions.Forbidden,
   }),

@@ -29,14 +29,14 @@ export const menuItems: NavGroup[] = [
         link: '/dashboard/support',
       },
 
-      {
-        text: 'Users',
-        icon: <Group />,
-        link: Routes.Users.ReadAll,
-        namespace: Namespaces.Users,
-        permission: CRUD_ACTION.READ,
-        routes: Routes.Users,
-      },
+      // {
+      //   text: 'Users',
+      //   icon: <Group />,
+      //   link: Routes.Users.ReadAll,
+      //   namespace: Namespaces.Users,
+      //   permission: CRUD_ACTION.READ,
+      //   routes: Routes.Users,
+      // },
     ],
   },
 ];

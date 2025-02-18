@@ -12,6 +12,7 @@ export interface CreateOneInput {
 export interface UpdateOneInput {
   email: string;
   password?: string;
+  isVerified: boolean;
   role: ROLE;
 }
 
