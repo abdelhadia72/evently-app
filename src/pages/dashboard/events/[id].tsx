@@ -34,7 +34,7 @@ const EventUpdatePage: NextPage = () => {
   }, [loaded]);
 
   useEffect(() => {
-    if (id) {
+        if (id) {
       fetchEvent();
     }
   }, [id]);
@@ -45,8 +45,8 @@ const EventUpdatePage: NextPage = () => {
       console.log('API Response:', response);
       if (response.success && response.data) {
         setItem(response.data);
-      }
-    } catch (error) {
+        }
+      } catch (error) {
       console.error('Error fetching event:', error);
       router.push(Routes.Events.ReadAll);
     } finally {
@@ -68,7 +68,7 @@ const EventUpdatePage: NextPage = () => {
           { name: item.title },
         ]}
       />
-      <UpdateEventForm item={item} />
+<UpdateEventForm item={item} />
     </>
   );
 };

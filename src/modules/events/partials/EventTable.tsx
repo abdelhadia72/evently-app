@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import { Event, CreateEventInput, UpdateEventInput } from '@modules/events/defs/types';
 import Namespaces from '@common/defs/namespaces';
 import useEvents from '@modules/events/hooks/api/useEvents';
+import { useTranslation } from 'react-i18next';
 
 
 interface Row extends CrudRow {
@@ -19,6 +20,7 @@ interface Row extends CrudRow {
 }
 
 const EventTable = () => {
+  const { t } = useTranslation(['event', 'common']);
   const columns: GridColumns<Row> = [
     {
       field: 'title',
@@ -72,17 +74,19 @@ const EventTable = () => {
 
 
   return (
-    <ItemsTable<Event, CreateEventInput, UpdateEventInput, Row>
-      namespace={Namespaces.Events}
-      routes={Routes.Events}
-      columns={columns}
-      useItems={useEvents}
-      itemToRow={itemToRow}
-      showEdit={() => true}
-      showDelete={() => true}
-      showLock
-      exportable
-    />
+    <>
+      <ItemsTable<Event, CreateEventInput, UpdateEventInput, Row>
+        namespace={Namespaces.Events}
+        routes={Routes.Events}
+        columns={columns}
+        useItems={useEvents}
+        itemToRow={itemToRow}
+        showEdit={() => true}
+        showDelete={() => true}
+        showLock
+        exportable
+      />
+    </>
   );
 };
 

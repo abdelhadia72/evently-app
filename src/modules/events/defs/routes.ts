@@ -1,10 +1,13 @@
-const Routes = {
-  ReadAll: '/dashboard/events',
-  CreateOne: '/dashboard/events/create',
-  UpdateOne: '/dashboard/events/{id}',
-  ReadOne: '/dashboard/events/{id}',
-  DeleteOne: '/dashboard/events/{id}',
-  Detail: '/dashboard/events/{id}',
+import { CrudAppRoutes } from '@common/defs/types';
+
+const prefix = '/dashboard/events';
+const Routes: CrudAppRoutes = {
+  ReadAll: prefix,
+  CreateOne: prefix + '/create',
+  UpdateOne: prefix + '/{id}',
+  ReadOne: '/{id}',
+  DeleteOne: '/{id}',
+  Detail: '/{id}',
 };
 
 export default Routes;

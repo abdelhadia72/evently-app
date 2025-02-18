@@ -18,6 +18,7 @@
   "maxAttendees": "Maximum Attendees",
   "end_date_after_start": "End date must be after start date",
   "edit_event": "Edit Event",
+  "create_event": "Create Event",
   "events": "Events",
   "imageUrl": "Image URL",
   "categories": {
