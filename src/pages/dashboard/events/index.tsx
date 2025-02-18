@@ -20,13 +20,13 @@ const Eventpage: NextPage = () => {
   return (
     <>
       <PageHeader
-        title={t(`user:${Labels.Users.ReadAll}`)}
+        title="Event List"
         action={{
-          label: t(`user:${Labels.Users.NewOne}`),
+          label: "New Event",
           startIcon: <Add />,
-          onClick: () => router.push(Routes.Users.CreateOne),
+          onClick: () => router.push(Routes.Events.CreateOne),
           permission: {
-            entity: Namespaces.Users,
+            entity: Namespaces.Events,
             action: CRUD_ACTION.CREATE,
           },
         }}
@@ -34,7 +34,8 @@ const Eventpage: NextPage = () => {
       <CustomBreadcrumbs
         links={[
           { name: t('common:dashboard'), href: Routes.Common.Home },
-          { name: t(`user:${Labels.Users.Items}`) },
+          // { name: t(`user:${Labels.Users.Items}`) },
+          { name: "Events" },
         ]}
       />
       <EventTable />
