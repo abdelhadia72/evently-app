@@ -6,7 +6,10 @@ import useApi from '@common/hooks/useApi';
 const useEvents = (opts: UseItemsOptions = defaultOptions) => {
   const apiRoutes = ApiRoutes.Events;
   const fetchApi = useApi();
-  const { mutate, ...rest } = useItems<Event, CreateEventInput, UpdateEventInput>(apiRoutes, opts);
+  const { mutate: mutateEvents, ...rest } = useItems<Event, CreateEventInput, UpdateEventInput>(
+    apiRoutes,
+    opts
+  );
 
   const attend = async (eventId: string | string[]) => {
     try {
@@ -17,7 +20,7 @@ const useEvents = (opts: UseItemsOptions = defaultOptions) => {
       });
 
       if (response.success) {
-        mutate();
+        mutateEvents();
       }
 
       return response;
@@ -60,7 +63,7 @@ const useEvents = (opts: UseItemsOptions = defaultOptions) => {
       );
 
       if (response.success) {
-        mutate();
+        mutateEvents();
       }
 
       return response;
@@ -72,6 +75,7 @@ const useEvents = (opts: UseItemsOptions = defaultOptions) => {
 
   return {
     ...rest,
+    mutate: mutateEvents, // explicitly include mutate in return
     attend,
     cancelAttendance,
     getAttendees,

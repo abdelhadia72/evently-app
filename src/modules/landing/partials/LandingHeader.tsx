@@ -23,7 +23,7 @@ const menuItems = [
 ];
 
 const LandingHeader = () => {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('topbar');
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -86,10 +86,10 @@ const LandingHeader = () => {
                   </MenuItem>
                 ))}
                 <MenuItem onClick={handleClose} component={Link} href="/auth/login">
-                  {t('auth.login')}
+                  {t('login')}
                 </MenuItem>
                 <MenuItem onClick={handleClose} component={Link} href="/auth/register">
-                  {t('auth.register')}
+                  {t('register')}
                 </MenuItem>
               </Menu>
             </>
@@ -101,10 +101,10 @@ const LandingHeader = () => {
                 </Button>
               ))}
               <Button component={Link} href="/auth/login" color="inherit">
-                {t('auth.login')}
+                {t('login')}
               </Button>
               <Button component={Link} href="/auth/register" variant="contained" color="primary">
-                {t('auth.register')}
+                {t('register')}
               </Button>
             </Box>
           )}
