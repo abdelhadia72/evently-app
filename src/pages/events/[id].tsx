@@ -10,7 +10,6 @@ import {
   Stack,
   Chip,
   Paper,
-  IconButton,
   Avatar,
   Divider,
   useTheme,
@@ -21,18 +20,10 @@ import useEvents from '@modules/events/hooks/api/useEvents';
 import dayjs from 'dayjs';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  FaMapMarkerAlt,
-  FaClock,
   FaTicketAlt,
-  FaCalendar,
-  FaUser,
   FaHeart,
   FaRegHeart,
   FaShare,
-  FaFacebookF,
-  FaTwitter,
-  FaLinkedinIn,
-  FaArrowLeft,
   FaRegCalendarAlt,
   FaVideo,
   FaMapMarkedAlt,
@@ -50,7 +41,68 @@ const EventPage: NextPage = () => {
   const [relatedEvents, setRelatedEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
-  const { readOne, readAll, attend } = useEvents();
+  const { readOne, readAll, attend, cancelAttendance, getAttendees } = useEvents();
+  const [attendToEvent, setAttendToEvent] = useState<Boolean>(false); 
+  const [attendees, setAttendees] = useState<number[]>([]);
+
+  useEffect(() => {
+    const fetchAttendees = async () => {
+      if (eventId) {
+        try {
+          const attendeesData = await getAttendees(eventId) as { id: number }[];
+          const attendeeIds = attendeesData.map((attendee: { id: number }) => attendee.id);
+          setAttendees(attendeeIds || []);
+          // Update attendToEvent status after fetching attendees
+          if (user) {
+            setAttendToEvent(attendeeIds.includes(user.id));
+          }
+        } catch (error) {
+          console.error("Error fetching attendees:", error);
+        }
+      }
+    };
+
+    fetchAttendees();
+  }, [eventId, user]); // Add user to dependencies
+
+  const handleAttend = async () => {
+    if (!user) {
+      router.push('/auth/login');
+      return;
+    }
+    
+    await attend(eventId);
+    // Refetch attendees after attending
+    const attendeesData = await getAttendees(eventId) as { id: number }[];
+    const attendeeIds = attendeesData.map((attendee: { id: number }) => attendee.id);
+    setAttendees(attendeeIds);
+    setAttendToEvent(true);
+  };
+
+  const handleCancelAttendance = async () => {
+    if (!user) {
+      router.push('/auth/login');
+      return;
+    }
+
+    await cancelAttendance(eventId);
+    // Refetch attendees after canceling
+    const attendeesData = await getAttendees(eventId) as { id: number }[];
+    const attendeeIds = attendeesData.map((attendee: { id: number }) => attendee.id);
+    setAttendees(attendeeIds);
+    setAttendToEvent(false);
+  };
+
+  useEffect(() => {
+    if (user && attendees.includes(user.id)) {
+      setAttendToEvent(true);
+    } else {
+      setAttendToEvent(false);
+    }
+  }, [user, attendees]);
+
+  console.log("user id is ", user && user.id)
+  console.log("attendees id is ", event && attendees)
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -111,11 +163,11 @@ const EventPage: NextPage = () => {
                   <Box sx={{ color: 'white' }}>
                     <Stack direction="row" spacing={1} sx={{ mb: 3 }}>
                       <Chip
-                        icon={<FaVideo style={{ fontSize: 16 }} />}
-                        label={event.status === 'online' ? 'Online Event' : 'In-Person Event'}
-                        sx={{ bgcolor: 'primary.main', color: 'white' }}
+                      icon={<FaVideo style={{ fontSize: 16 }} />}
+                      label={event.status === 'online' ? 'Online Event' : 'In-Person Event'}
+                      sx={{ bgcolor: 'primary.main', color: 'white', px: 2 }}
                       />
-                      <Chip label={event.category} sx={{ bgcolor: alpha('#fff', 0.2) }} />
+                      <Chip label={event.category} sx={{ bgcolor: alpha('#fff', 0.4), px: 2 }} />
                     </Stack>
 
                     <Typography variant="h2" sx={{ mb: 4, fontWeight: 800 }}>
@@ -160,26 +212,36 @@ const EventPage: NextPage = () => {
                         <Typography color="text.secondary">General Admission</Typography>
                       </Box>
 
-                      <Button
-                        onClick={() => {
-                          if (user) {
-                            attend(eventId);
-                          } else {
-                            router.push('/auth/login');
-                          }
-                        }}
-                        fullWidth
-                        size="large"
-                        variant="contained"
-                        startIcon={<FaTicketAlt style={{ fontSize: 18 }} />}
-                        sx={{
-                          py: 1.5,
-                          fontWeight: 600,
-                        }}
-                      >
-                        Register Now
-                      </Button>
-
+                      {!attendToEvent ? (
+                        <Button
+                          onClick={handleAttend}
+                          fullWidth
+                          size="large"
+                          variant="contained"
+                          startIcon={<FaTicketAlt style={{ fontSize: 18 }} />}
+                          sx={{
+                            py: 1.5,
+                            fontWeight: 600,
+                          }}
+                        >
+                          Join Event
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={handleCancelAttendance}
+                          fullWidth
+                          size="large"
+                          color="error"
+                          variant="outlined"
+                          startIcon={<FaTicketAlt style={{ fontSize: 18 }} />}
+                          sx={{
+                            py: 1.5,
+                            fontWeight: 600,
+                          }}
+                        >
+                          Cancel Ticket
+                        </Button>
+                      )}
                       <Box sx={{ textAlign: 'center' }}>
                         <Button startIcon={<FaShare style={{ fontSize: 16 }} />} sx={{ mr: 1 }}>
                           Share
@@ -282,10 +344,10 @@ const EventPage: NextPage = () => {
                     </Avatar>
                     <Box>
                       <Typography variant="subtitle1" fontWeight={600}>
-                        Event Organizer
+                        {event.organizer.username || 'Event Organizer'}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        50+ events hosted
+                        {event.organizer.hostedEvents || 'Event Organizer'}
                       </Typography>
                     </Box>
                   </Box>

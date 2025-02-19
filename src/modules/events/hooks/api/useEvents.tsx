@@ -22,8 +22,26 @@ const useEvents = (opts: UseItemsOptions = defaultOptions) => {
 
       return response;
     } catch (error) {
-      console.error('Error attending event:', error);
       return { success: false, message: 'Failed to attend event' };
+    }
+  };
+
+  const getAttendees = async (eventId: string | string[]) => {
+    try {
+      const response = await fetchApi(ApiRoutes.Events.GetAttendees.replace('{id}', eventId.toString()), {
+        method: 'GET',
+        displayProgress: true,
+        displaySuccess: false,
+      });
+
+      if (response.success) {
+        return response.data;
+      }
+
+      return response.data;;
+    } catch (error) {
+      console.error('Error fetching attendees:', error);
+      return { success: false, message: 'Failed to getting attendance' };
     }
   };
 
@@ -53,6 +71,7 @@ const useEvents = (opts: UseItemsOptions = defaultOptions) => {
     ...rest,
     attend,
     cancelAttendance,
+    getAttendees
   };
 };
 

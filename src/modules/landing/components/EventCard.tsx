@@ -177,7 +177,7 @@ const EventCard = (event: EventCardProps) => {
               {event.price}
             </Typography>
             <Link 
-              href={`/dashboard/events/${event.id}`} 
+              href={`/events/${event.id}`} 
               passHref 
               style={{ textDecoration: 'none', flexShrink: 0 }}
             >

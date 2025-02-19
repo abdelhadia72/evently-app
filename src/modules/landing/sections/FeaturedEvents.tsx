@@ -99,7 +99,7 @@ const FeaturedEvents = () => {
               </Typography>
             </Box>
 
-            <Link href="/dashboard/events" passHref style={{ textDecoration: 'none' }}>
+            <Link href="/events" passHref style={{ textDecoration: 'none' }}>
               <Button 
                 variant="text"
                 endIcon={<ArrowForwardIcon />}
