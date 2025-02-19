@@ -9,23 +9,26 @@ const features = [
   {
     icon: <EventAvailableIcon sx={{ fontSize: 40 }} />,
     title: 'Easy Event Creation',
-    description: 'Create and manage your events with our intuitive tools. Set up ticketing, schedules, and more in minutes.'
+    description:
+      'Create and manage your events with our intuitive tools. Set up ticketing, schedules, and more in minutes.',
   },
   {
     icon: <GroupsIcon sx={{ fontSize: 40 }} />,
     title: 'Grow Your Community',
-    description: 'Connect with attendees and build your audience. Promote your events to reach more people.'
+    description:
+      'Connect with attendees and build your audience. Promote your events to reach more people.',
   },
   {
     icon: <AnalyticsIcon sx={{ fontSize: 40 }} />,
     title: 'Powerful Analytics',
-    description: 'Get detailed insights about your events. Track sales, attendance, and engagement metrics.'
+    description:
+      'Get detailed insights about your events. Track sales, attendance, and engagement metrics.',
   },
   {
     icon: <PaymentsIcon sx={{ fontSize: 40 }} />,
     title: 'Secure Payments',
-    description: 'Handle ticket sales with confidence using our secure payment processing system.'
-  }
+    description: 'Handle ticket sales with confidence using our secure payment processing system.',
+  },
 ];
 
 const Features = () => {
@@ -33,19 +36,12 @@ const Features = () => {
     <Box sx={{ py: { xs: 6, md: 10 }, bgcolor: 'grey.50' }}>
       <Container maxWidth="lg">
         <Box sx={{ textAlign: 'center', mb: 8 }}>
-          <Typography
-            variant="h3"
-            component="h2"
-            sx={{ mb: 2, fontWeight: 700 }}
-          >
+          <Typography variant="h3" component="h2" sx={{ mb: 2, fontWeight: 700 }}>
             Everything You Need to Host Great Events
           </Typography>
-          <Typography
-            variant="h6"
-            color="text.secondary"
-            sx={{ maxWidth: 800, mx: 'auto' }}
-          >
-            Our platform provides all the tools and features you need to create, manage, and grow successful events
+          <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 800, mx: 'auto' }}>
+            Our platform provides all the tools and features you need to create, manage, and grow
+            successful events
           </Typography>
         </Box>
 
@@ -65,19 +61,11 @@ const Features = () => {
                   },
                 }}
               >
-                <Box sx={{ color: 'primary.main', mb: 2 }}>
-                  {feature.icon}
-                </Box>
-                <Typography
-                  variant="h6"
-                  component="h3"
-                  sx={{ mb: 2, fontWeight: 600 }}
-                >
+                <Box sx={{ color: 'primary.main', mb: 2 }}>{feature.icon}</Box>
+                <Typography variant="h6" component="h3" sx={{ mb: 2, fontWeight: 600 }}>
                   {feature.title}
                 </Typography>
-                <Typography color="text.secondary">
-                  {feature.description}
-                </Typography>
+                <Typography color="text.secondary">{feature.description}</Typography>
               </Paper>
             </Grid>
           ))}

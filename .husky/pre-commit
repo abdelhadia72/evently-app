@@ -1,4 +1,13 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+# format the code with prettier
+npm run format
+
+# fix the ESLint
+npm run lint:fix
+
+# check the ESLint
 npm run lint
+
+git add .

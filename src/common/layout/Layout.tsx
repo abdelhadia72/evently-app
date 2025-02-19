@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router';
 import LandingLayout from './LandingLayout';
 import DashboardLayout from './DashboardLayout';
-import Routes from '@common/defs/routes';
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();

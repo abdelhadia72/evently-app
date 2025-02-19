@@ -11,7 +11,6 @@ import { Event } from '@modules/events/defs/types';
 import useEvents from '@modules/events/hooks/api/useEvents';
 import { CRUD_ACTION, Id } from '@common/defs/types';
 import Namespaces from '@common/defs/namespaces';
-import Labels from '@common/defs/labels';
 import UpdateEventForm from '@modules/events/partials/UpdateEventForm';
 import { useTranslation } from 'react-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
@@ -34,7 +33,7 @@ const EventUpdatePage: NextPage = () => {
   }, [loaded]);
 
   useEffect(() => {
-        if (id) {
+    if (id) {
       fetchEvent();
     }
   }, [id]);
@@ -45,8 +44,8 @@ const EventUpdatePage: NextPage = () => {
       console.log('API Response:', response);
       if (response.success && response.data) {
         setItem(response.data);
-        }
-      } catch (error) {
+      }
+    } catch (error) {
       console.error('Error fetching event:', error);
       router.push(Routes.Events.ReadAll);
     } finally {
@@ -68,7 +67,7 @@ const EventUpdatePage: NextPage = () => {
           { name: item.title },
         ]}
       />
-<UpdateEventForm item={item} />
+      <UpdateEventForm item={item} />
     </>
   );
 };

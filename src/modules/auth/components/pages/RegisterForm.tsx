@@ -40,10 +40,10 @@ const RegisterForm = () => {
     formState: { isSubmitting },
   } = methods;
 
-  const handleUserTypeChange = (_: any, value: string) => {
+  const handleUserTypeChange = (_: React.MouseEvent<HTMLElement>, value: string | null) => {
     if (value) {
       setUserType(value);
-      setValue('role', value);
+      setValue('role', value as 'attendee' | 'organizer');
     }
   };
 
@@ -58,7 +58,10 @@ const RegisterForm = () => {
         },
         { displayProgress: true, displaySuccess: true }
       );
+      // README
+      console.log('result:', result);
     } catch (error) {
+      console.error('Error registering:', error);
     }
   };
 
@@ -113,9 +116,9 @@ const RegisterForm = () => {
                 <ToggleButtonGroup
                   value={userType}
                   exclusive
-                  onChange={handleUserTypeChange} 
+                  onChange={handleUserTypeChange}
                   fullWidth
-                  sx={{ 
+                  sx={{
                     '& .MuiToggleButton-root': {
                       borderRadius: 1,
                       transition: 'all 0.2s',
@@ -159,11 +162,11 @@ const RegisterForm = () => {
               </Grid>
 
               <Grid item xs={12}>
-                <RHFTextField 
-                  name="email" 
-                  label="Email" 
+                <RHFTextField
+                  name="email"
+                  label="Email"
                   fullWidth
-                  sx={{ 
+                  sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: '5px',
                     },
@@ -172,12 +175,12 @@ const RegisterForm = () => {
               </Grid>
 
               <Grid item xs={12}>
-                <RHFTextField 
-                  name="password" 
-                  label="Password" 
-                  type="password" 
+                <RHFTextField
+                  name="password"
+                  label="Password"
+                  type="password"
                   fullWidth
-                  sx={{ 
+                  sx={{
                     '& .MuiOutlinedInput-root': {
                       borderRadius: '5px',
                     },
@@ -198,7 +201,7 @@ const RegisterForm = () => {
                     py: 1.5,
                     textTransform: 'none',
                     fontSize: '1.1rem',
-                    borderRadius: "10px",
+                    borderRadius: '10px',
                     background: '#263238',
                     boxShadow: '0 3px 5px 2px rgba(129, 199, 132, .3)',
                     transition: 'all 0.3s',
@@ -213,9 +216,9 @@ const RegisterForm = () => {
               </Grid>
 
               <Grid item xs={12} sx={{ textAlign: 'center' }}>
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
+                <Typography
+                  variant="body2"
+                  sx={{
                     color: 'text.secondary',
                     '& a': {
                       textDecoration: 'none',

@@ -1,37 +1,43 @@
-import { createContext, useContext, ReactNode, useMemo } from 'react';
-import { ROLE } from '@modules/permissions/defs/types';
-import useRoles from '@modules/roles/hooks/useRoles';
+import { createContext, useContext, useState, useMemo } from 'react';
 
-interface DashboardContextType {
-  isAdmin: boolean;
-  isOrganizer: boolean;
+export type View = 'grid' | 'list';
+
+interface DashboardContextProps {
+  open: boolean;
+  view: View;
+  onToggle: VoidFunction;
+  onView: (view: View) => void;
 }
 
-const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
+const DashboardContext = createContext({} as DashboardContextProps);
 
-export const DashboardProvider = ({ children }: { children: ReactNode }) => {
-  const { hasRole } = useRoles();
+interface DashboardProviderProps {
+  children: React.ReactNode;
+}
 
-  const value = useMemo(
+export const DashboardProvider = ({ children }: DashboardProviderProps) => {
+  const [open, setOpen] = useState(true);
+  const [view, setView] = useState<View>('grid');
+
+  const contextValue = useMemo(
     () => ({
-      isAdmin: hasRole(ROLE.ADMIN),
-      isOrganizer: hasRole(ROLE.ORGANIZER),
+      open,
+      view,
+      onToggle: () => setOpen(!open),
+      onView: (newView: View) => setView(newView),
     }),
-    [hasRole]
+    [open, view]
   );
 
-  return (
-    <DashboardContext.Provider value={{ isAdmin: true, isOrganizer: false }}>
-      {children}
-    </DashboardContext.Provider>
-  );
-  // return <DashboardContext.Provider value={value}>{children}</DashboardContext.Provider>;
+  return <DashboardContext.Provider value={contextValue}>{children}</DashboardContext.Provider>;
 };
 
 export const useDashboard = () => {
   const context = useContext(DashboardContext);
-  if (context === undefined) {
-    throw new Error('useDashboard must be used within a DashboardProvider');
+
+  if (!context) {
+    throw new Error('useDashboard must be used within DashboardProvider');
   }
+
   return context;
 };

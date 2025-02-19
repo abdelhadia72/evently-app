@@ -1,11 +1,10 @@
 import { Box, Drawer, IconButton, List, ListItemText, Tooltip } from '@mui/material';
 import { NavItem } from '@common/defs/types';
 import {
-  StyledLinkNavItem,
   StyledListItemButton,
   StyledListItemIcon,
 } from '@common/components/lib/navigation/Drawers/styled-drawer-items';
-import { MoreVert as ChevronRight } from '@mui/icons-material';
+import { ChevronRight } from '@mui/icons-material';
 import { NextRouter } from 'next/router';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -29,6 +28,13 @@ const NestedDrawer = (props: NestedDrawerProps) => {
 
   const handleCloseSubDrawer = () => {
     setSubNavItems([]);
+  };
+
+  const getNormalizedLink = (link?: string): string => {
+    if (!link || link.length <= 1) {
+      return link || '/';
+    }
+    return link.endsWith('/') ? link.slice(0, -1) : link;
   };
 
   return (
@@ -65,11 +71,7 @@ const NestedDrawer = (props: NestedDrawerProps) => {
       <Box>
         <List disablePadding>
           {navItems.map((item, itemIndex) => {
-            const link = item.link?.length > 1 
-              ? item.link.endsWith('/') 
-                ? item.link.slice(0, -1) 
-                : item.link
-              : item.link || '/';
+            const link = getNormalizedLink(item.link);
 
             return (
               <Box

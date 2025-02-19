@@ -7,7 +7,6 @@ import { Grid, MenuItem } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import dayjs from 'dayjs';
-import { useSnackbar } from '@common/contexts/SnackbarProvider';
 import { useRouter } from 'next/router';
 import { UseFormReturn } from 'react-hook-form';
 import { ItemResponse } from '@common/hooks/useItems';
@@ -19,12 +18,12 @@ const CATEGORIES = [
   { value: 'sports', label: 'event:categories.sports' },
   { value: 'music', label: 'event:categories.music' },
   { value: 'art', label: 'event:categories.art' },
-  { value: 'other', label: 'event:categories.other' }
+  { value: 'other', label: 'event:categories.other' },
 ];
 
 const STATUS_OPTIONS = [
   { value: 'draft', label: 'event:statuses.draft' },
-  { value: 'published', label: 'event:statuses.published' }
+  { value: 'published', label: 'event:statuses.published' },
 ];
 
 const CreateEventForm = () => {
@@ -51,9 +50,11 @@ const CreateEventForm = () => {
     startTime: Yup.string().required(t('common:field_required')),
     endDate: Yup.string()
       .required(t('common:field_required'))
-      .test('is-after-start', t('event:end_date_after_start'), function(value) {
-        const { startDate, startTime, endTime } = this.parent;
-        if (!startDate || !value) return true;
+      .test('is-after-start', t('event:end_date_after_start'), (value, context) => {
+        const { startDate, startTime, endTime } = context.parent;
+        if (!startDate || !value) {
+          return true;
+        }
         const startDateTime = dayjs(`${startDate} ${startTime}`);
         const endDateTime = dayjs(`${value} ${endTime}`);
         return endDateTime.isAfter(startDateTime);
@@ -96,9 +97,9 @@ const CreateEventForm = () => {
     };
     delete updatedData.startTime;
     delete updatedData.endTime;
-    
+
     return {
-      data: updatedData
+      data: updatedData,
     };
   };
 
@@ -119,8 +120,8 @@ const CreateEventForm = () => {
           <RHFTextField name="location" label={t('event:location')} />
         </Grid>
         <Grid item xs={12} md={6}>
-          <RHFTextField 
-            name="maxAttendees" 
+          <RHFTextField
+            name="maxAttendees"
             label={t('event:maxAttendees')}
             type="number"
             inputProps={{ min: 1 }}
@@ -145,57 +146,48 @@ const CreateEventForm = () => {
           </RHFSelect>
         </Grid>
         <Grid item xs={12} md={6}>
-          <RHFTextField 
-            name="imageUrl" 
-            label={t('event:imageUrl')}
-            type="url"
-          />
+          <RHFTextField name="imageUrl" label={t('event:imageUrl')} type="url" />
         </Grid>
         <Grid item xs={12} md={6}>
-          <RHFTextField 
-            name="startDate" 
+          <RHFTextField
+            name="startDate"
             label={t('event:startDate')}
             type="date"
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
         <Grid item xs={12} md={6}>
-          <RHFTextField 
-            name="startTime" 
+          <RHFTextField
+            name="startTime"
             label={t('event:time')}
             type="time"
             InputLabelProps={{ shrink: true }}
             inputProps={{
-              step: 300
+              step: 300,
             }}
           />
         </Grid>
         <Grid item xs={12} md={6}>
-          <RHFTextField 
-            name="endDate" 
+          <RHFTextField
+            name="endDate"
             label={t('event:endDate')}
             type="date"
             InputLabelProps={{ shrink: true }}
           />
         </Grid>
         <Grid item xs={12} md={6}>
-          <RHFTextField 
-            name="endTime" 
+          <RHFTextField
+            name="endTime"
             label={t('event:time')}
             type="time"
             InputLabelProps={{ shrink: true }}
             inputProps={{
-              step: 300
+              step: 300,
             }}
           />
         </Grid>
         <Grid item xs={12}>
-          <RHFTextField 
-            name="description" 
-            label={t('event:description')}
-            multiline
-            rows={4}
-          />
+          <RHFTextField name="description" label={t('event:description')} multiline rows={4} />
         </Grid>
       </Grid>
     </CreateCrudItemForm>

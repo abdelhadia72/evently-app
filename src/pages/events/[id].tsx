@@ -42,14 +42,14 @@ const EventPage: NextPage = () => {
   const [loading, setLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
   const { readOne, readAll, attend, cancelAttendance, getAttendees } = useEvents();
-  const [attendToEvent, setAttendToEvent] = useState<Boolean>(false); 
+  const [attendToEvent, setAttendToEvent] = useState<boolean>(false);
   const [attendees, setAttendees] = useState<number[]>([]);
 
   useEffect(() => {
     const fetchAttendees = async () => {
       if (eventId) {
         try {
-          const attendeesData = await getAttendees(eventId) as { id: number }[];
+          const attendeesData = (await getAttendees(eventId)) as { id: number }[];
           const attendeeIds = attendeesData.map((attendee: { id: number }) => attendee.id);
           setAttendees(attendeeIds || []);
           // Update attendToEvent status after fetching attendees
@@ -57,7 +57,7 @@ const EventPage: NextPage = () => {
             setAttendToEvent(attendeeIds.includes(user.id));
           }
         } catch (error) {
-          console.error("Error fetching attendees:", error);
+          console.error('Error fetching attendees:', error);
         }
       }
     };
@@ -70,10 +70,10 @@ const EventPage: NextPage = () => {
       router.push('/auth/login');
       return;
     }
-    
+
     await attend(eventId);
     // Refetch attendees after attending
-    const attendeesData = await getAttendees(eventId) as { id: number }[];
+    const attendeesData = (await getAttendees(eventId)) as { id: number }[];
     const attendeeIds = attendeesData.map((attendee: { id: number }) => attendee.id);
     setAttendees(attendeeIds);
     setAttendToEvent(true);
@@ -87,7 +87,7 @@ const EventPage: NextPage = () => {
 
     await cancelAttendance(eventId);
     // Refetch attendees after canceling
-    const attendeesData = await getAttendees(eventId) as { id: number }[];
+    const attendeesData = (await getAttendees(eventId)) as { id: number }[];
     const attendeeIds = attendeesData.map((attendee: { id: number }) => attendee.id);
     setAttendees(attendeeIds);
     setAttendToEvent(false);
@@ -101,8 +101,8 @@ const EventPage: NextPage = () => {
     }
   }, [user, attendees]);
 
-  console.log("user id is ", user && user.id)
-  console.log("attendees id is ", event && attendees)
+  console.log('user id is ', user && user.id);
+  console.log('attendees id is ', event && attendees);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -163,9 +163,9 @@ const EventPage: NextPage = () => {
                   <Box sx={{ color: 'white' }}>
                     <Stack direction="row" spacing={1} sx={{ mb: 3 }}>
                       <Chip
-                      icon={<FaVideo style={{ fontSize: 16 }} />}
-                      label={event.status === 'online' ? 'Online Event' : 'In-Person Event'}
-                      sx={{ bgcolor: 'primary.main', color: 'white', px: 2 }}
+                        icon={<FaVideo style={{ fontSize: 16 }} />}
+                        label={event.status === 'online' ? 'Online Event' : 'In-Person Event'}
+                        sx={{ bgcolor: 'primary.main', color: 'white', px: 2 }}
                       />
                       <Chip label={event.category} sx={{ bgcolor: alpha('#fff', 0.4), px: 2 }} />
                     </Stack>

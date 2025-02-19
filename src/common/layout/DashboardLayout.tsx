@@ -43,9 +43,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <Box sx={{ position: 'relative' }}>
           <Topbar onToggle={handleToggle} />
         </Box>
-        <Box sx={{ marginTop: '64px', padding: 3 }}>
-          {children}
-        </Box>
+        <Box sx={{ marginTop: '64px', padding: 3 }}>{children}</Box>
       </Box>
     </Box>
   );

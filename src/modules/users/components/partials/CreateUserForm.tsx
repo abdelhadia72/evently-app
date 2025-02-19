@@ -16,9 +16,7 @@ interface CreateUserFormProps {}
 const CreateUserForm = (_props: CreateUserFormProps) => {
   const router = useRouter();
   const schema = Yup.object().shape({
-    email: Yup.string()
-      .email("Invalid email format")
-      .required('This field is required'),
+    email: Yup.string().email('Invalid email format').required('This field is required'),
     password: Yup.string().required('This field is required'),
     role: Yup.mixed<ROLE>()
       .oneOf(Object.values(ROLE), (_values) => {

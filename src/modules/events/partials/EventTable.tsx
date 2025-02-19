@@ -6,21 +6,18 @@ import dayjs from 'dayjs';
 import { Event, CreateEventInput, UpdateEventInput } from '@modules/events/defs/types';
 import Namespaces from '@common/defs/namespaces';
 import useEvents from '@modules/events/hooks/api/useEvents';
-import { useTranslation } from 'react-i18next';
-
 
 interface Row extends CrudRow {
-  title: string,
-  location: string,
-  organizerId: number,
-  maxAttendees: number,
-  description: string,
-  startDate: string,
-  endDate: string,
+  title: string;
+  location: string;
+  organizerId: number;
+  maxAttendees: number;
+  description: string;
+  startDate: string;
+  endDate: string;
 }
 
 const EventTable = () => {
-  const { t } = useTranslation(['event', 'common']);
   const columns: GridColumns<Row> = [
     {
       field: 'title',
@@ -55,23 +52,20 @@ const EventTable = () => {
         const startDate = dayjs(params.row.startDate).format('DD/MM/YYYY');
         const endDate = dayjs(params.row.endDate).format('DD/MM/YYYY');
         return `${startDate} - ${endDate}`;
-      }
+      },
     },
   ];
 
-  const itemToRow = (item: Event): Row => (
-    {
-      id: item.id,
-      title: item.title,
-      location: item.location,
-      organizerId: item.organizerId,
-      maxAttendees: item.maxAttendees,
-      description: item.description,
-      startDate: item.startDate,
-      endDate: item.endDate,
-    }
-  )
-
+  const itemToRow = (item: Event): Row => ({
+    id: item.id,
+    title: item.title,
+    location: item.location,
+    organizerId: item.organizerId,
+    maxAttendees: item.maxAttendees,
+    description: item.description,
+    startDate: item.startDate,
+    endDate: item.endDate,
+  });
 
   return (
     <>

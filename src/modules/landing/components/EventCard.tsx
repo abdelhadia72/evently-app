@@ -1,6 +1,16 @@
 import React from 'react';
 import Link from 'next/link';
-import { Box, Button, Card, CardContent, CardMedia, Chip, Grid, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardMedia,
+  Chip,
+  Grid,
+  Stack,
+  Typography,
+} from '@mui/material';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PersonIcon from '@mui/icons-material/Person';
@@ -67,19 +77,19 @@ const EventCard = (event: EventCardProps) => {
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               '& .MuiChip-label': {
                 px: 1.5,
-              }
+              },
             }}
           />
         </Box>
-        <CardContent 
-          sx={{ 
-            flexGrow: 1, 
+        <CardContent
+          sx={{
+            flexGrow: 1,
             p: 2,
-            '&:last-child': { pb: 2 }
+            '&:last-child': { pb: 2 },
           }}
         >
-          <Typography 
-            variant="h6" 
+          <Typography
+            variant="h6"
             component="h3"
             sx={{
               fontSize: '1rem',
@@ -98,36 +108,36 @@ const EventCard = (event: EventCardProps) => {
           </Typography>
           <Stack spacing={1.5} sx={{ mb: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <CalendarTodayIcon 
-                fontSize="small" 
-                sx={{ 
+              <CalendarTodayIcon
+                fontSize="small"
+                sx={{
                   color: 'text.secondary',
-                  fontSize: '1rem'
-                }} 
+                  fontSize: '1rem',
+                }}
               />
-              <Typography 
-                variant="body2" 
-                sx={{ 
+              <Typography
+                variant="body2"
+                sx={{
                   color: 'text.secondary',
-                  fontSize: '0.875rem'
+                  fontSize: '0.875rem',
                 }}
               >
                 {event.date}
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <LocationOnIcon 
-                fontSize="small" 
-                sx={{ 
+              <LocationOnIcon
+                fontSize="small"
+                sx={{
                   color: 'text.secondary',
-                  fontSize: '1rem'
-                }} 
+                  fontSize: '1rem',
+                }}
               />
-              <Typography 
-                variant="body2" 
-                sx={{ 
+              <Typography
+                variant="body2"
+                sx={{
                   color: 'text.secondary',
-                  fontSize: '0.875rem'
+                  fontSize: '0.875rem',
                 }}
               >
                 {event.location}
@@ -135,18 +145,18 @@ const EventCard = (event: EventCardProps) => {
             </Box>
             {event.attendees && (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <PersonIcon 
-                  fontSize="small" 
-                  sx={{ 
+                <PersonIcon
+                  fontSize="small"
+                  sx={{
                     color: 'text.secondary',
-                    fontSize: '1rem'
-                  }} 
+                    fontSize: '1rem',
+                  }}
                 />
-                <Typography 
-                  variant="body2" 
-                  sx={{ 
+                <Typography
+                  variant="body2"
+                  sx={{
                     color: 'text.secondary',
-                    fontSize: '0.875rem'
+                    fontSize: '0.875rem',
                   }}
                 >
                   {event.attendees} attending
@@ -154,34 +164,34 @@ const EventCard = (event: EventCardProps) => {
               </Box>
             )}
           </Stack>
-          <Box 
-            sx={{ 
+          <Box
+            sx={{
               mt: 'auto',
               pt: 2,
               borderTop: '1px solid',
               borderColor: 'divider',
-              display: 'flex', 
-              justifyContent: 'space-between', 
+              display: 'flex',
+              justifyContent: 'space-between',
               alignItems: 'center',
-              gap: 2
+              gap: 2,
             }}
           >
-            <Typography 
-              variant="subtitle1" 
-              sx={{ 
-                color: 'primary.main', 
+            <Typography
+              variant="subtitle1"
+              sx={{
+                color: 'primary.main',
                 fontWeight: 600,
-                fontSize: '1rem'
+                fontSize: '1rem',
               }}
             >
               {event.price}
             </Typography>
-            <Link 
-              href={`/events/${event.id}`} 
-              passHref 
+            <Link
+              href={`/events/${event.id}`}
+              passHref
               style={{ textDecoration: 'none', flexShrink: 0 }}
             >
-              <Button 
+              <Button
                 variant="contained"
                 size="small"
                 sx={{
@@ -194,7 +204,7 @@ const EventCard = (event: EventCardProps) => {
                   boxShadow: 'none',
                   '&:hover': {
                     boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                  }
+                  },
                 }}
               >
                 Get Tickets

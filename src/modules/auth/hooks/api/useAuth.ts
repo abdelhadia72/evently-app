@@ -13,7 +13,7 @@ export interface LoginInput {
 export interface RegisterInput {
   email: string;
   password: string;
-  role: 'attendee' | 'organizer'
+  role: 'attendee' | 'organizer';
 }
 
 export interface RequestPasswordResetInput {

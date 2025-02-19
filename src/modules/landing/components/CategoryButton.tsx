@@ -14,7 +14,7 @@ const categoryColors = {
   'food & drink': 'linear-gradient(135deg, #FF9F43 0%, #FF6B2D 100%)',
   arts: 'linear-gradient(135deg, #9B51E0 0%, #6C2EE4 100%)',
   business: 'linear-gradient(135deg, #2ED573 0%, #1ABC9C 100%)',
-  sports: 'linear-gradient(135deg, #FF4B4B 0%, #FF2E2E 100%)'
+  sports: 'linear-gradient(135deg, #FF4B4B 0%, #FF2E2E 100%)',
 };
 
 interface CategoryButtonProps {
@@ -50,14 +50,16 @@ const CategoryButton: React.FC<CategoryButtonProps> = ({ category }) => {
   };
 
   return (
-    <Box sx={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      alignItems: 'center',
-      gap: 2,
-      m: 2
-    }}>
-      <IconButton 
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 2,
+        m: 2,
+      }}
+    >
+      <IconButton
         onClick={handleClick}
         sx={{
           width: 85,
@@ -73,30 +75,30 @@ const CategoryButton: React.FC<CategoryButtonProps> = ({ category }) => {
             '& .category-icon': {
               transform: 'scale(1.15)',
               filter: 'brightness(1.2)',
-            }
+            },
           },
         }}
       >
-        <IconComponent 
-          className="category-icon" 
-          sx={{ 
+        <IconComponent
+          className="category-icon"
+          sx={{
             fontSize: 35,
             transition: 'all 0.3s ease',
-            filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
-          }} 
+            filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))',
+          }}
         />
       </IconButton>
-      <Typography 
-        variant="subtitle1" 
-        sx={{ 
+      <Typography
+        variant="subtitle1"
+        sx={{
           color: 'black',
           fontWeight: 500,
           fontSize: '0.95rem',
           opacity: 0.9,
           transition: 'opacity 0.3s ease',
           '&:hover': {
-            opacity: 1
-          }
+            opacity: 1,
+          },
         }}
       >
         {category}

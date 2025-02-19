@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Container, Typography, Button, TextField, InputAdornment, Fade } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import ExploreIcon from '@mui/icons-material/Explore';
 import { useRouter } from 'next/router';
 
 const Hero = () => {
@@ -27,7 +26,8 @@ const Hero = () => {
     <Box
       sx={{
         position: 'relative',
-        background: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url("/images/photos/hero-bg.jpg")',
+        background:
+          'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), url("/images/photos/hero-bg.jpg")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
@@ -43,7 +43,7 @@ const Hero = () => {
           right: 0,
           height: '100%',
           background: 'linear-gradient(45deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%)',
-          zIndex: 1
+          zIndex: 1,
         },
         '&::after': {
           content: '""',
@@ -54,16 +54,16 @@ const Hero = () => {
           height: '250px',
           background: 'linear-gradient(to bottom, transparent, #0a0a0a)',
           pointerEvents: 'none',
-          zIndex: 1
-        }
+          zIndex: 1,
+        },
       }}
     >
       <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 2 }}>
         <Fade in timeout={1000}>
           <Box sx={{ textAlign: 'center', mb: 8 }}>
-            <Typography 
-              variant="h1" 
-              sx={{ 
+            <Typography
+              variant="h1"
+              sx={{
                 mb: 3,
                 fontWeight: 800,
                 fontSize: { xs: '2.75rem', sm: '3.5rem', md: '4.5rem' },
@@ -75,12 +75,13 @@ const Hero = () => {
                 WebkitTextFillColor: 'transparent',
               }}
             >
-              Discover & Create<br />
+              Discover & Create
+              <br />
               Unforgettable Events
             </Typography>
-            <Typography 
-              variant="h5" 
-              sx={{ 
+            <Typography
+              variant="h5"
+              sx={{
                 mb: 6,
                 fontWeight: 400,
                 opacity: 0.9,
@@ -89,11 +90,11 @@ const Hero = () => {
                 textShadow: '1px 1px 2px rgba(0,0,0,0.3)',
                 lineHeight: 1.6,
                 fontSize: { xs: '1.1rem', md: '1.25rem' },
-                color: 'rgba(255, 255, 255, 0.9)'
+                color: 'rgba(255, 255, 255, 0.9)',
               }}
             >
-              Join thousands of people creating and experiencing amazing events worldwide.
-              Find your next unforgettable moment.
+              Join thousands of people creating and experiencing amazing events worldwide. Find your
+              next unforgettable moment.
             </Typography>
           </Box>
         </Fade>
@@ -136,7 +137,7 @@ const Hero = () => {
                       opacity: 0.8,
                     },
                   },
-                }
+                },
               }}
             />
             <Button
@@ -163,13 +164,15 @@ const Hero = () => {
         </Fade>
 
         <Fade in timeout={2000}>
-          <Box sx={{ 
-            mt: 6, 
-            display: 'flex', 
-            justifyContent: 'center',
-            gap: 3,
-            flexWrap: 'wrap'
-          }}>
+          <Box
+            sx={{
+              mt: 6,
+              display: 'flex',
+              justifyContent: 'center',
+              gap: 3,
+              flexWrap: 'wrap',
+            }}
+          >
             {['Conferences', 'Workshops', 'Concerts', 'Sports', 'Art & Culture'].map((tag) => (
               <Box
                 key={tag}
@@ -187,7 +190,7 @@ const Hero = () => {
                   '&:hover': {
                     backgroundColor: 'rgba(255, 255, 255, 0.2)',
                     transform: 'translateY(-2px)',
-                  }
+                  },
                 }}
               >
                 {tag}

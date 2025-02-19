@@ -44,26 +44,24 @@ const UsersTable = () => {
     },
     {
       field: 'otp',
-      headerName: "code",
+      headerName: 'code',
       flex: 1,
     },
     {
       field: 'roles',
-      headerName: "Role",
+      headerName: 'Role',
       type: 'boolean',
       width: 125,
       renderCell: (params) => {
         const { row: item } = params;
         const { roles } = item;
         if (roles.includes('admin')) {
-            return <div style={{ color: '#D32F2F', fontWeight: 600 }}>Admin</div>;
+          return <div style={{ color: '#D32F2F', fontWeight: 600 }}>Admin</div>;
         }
-         if (roles.includes('organizer')) {
-            return <div style={{ color: '#1976D2', fontWeight: 600 }}>Organizer</div>;
-                  
+        if (roles.includes('organizer')) {
+          return <div style={{ color: '#1976D2', fontWeight: 600 }}>Organizer</div>;
         }
         return <div style={{ color: '#388E3C', fontWeight: 600 }}>User</div>;
-
       },
     },
     {
@@ -81,11 +79,11 @@ const UsersTable = () => {
   }, [t, i18n.language]);
 
   const itemToRow = (item: User): Row => {
-    console.log("verfied is ", item.isVerified);
+    console.log('verfied is ', item.isVerified);
     return {
       id: item.id,
       email: item.email,
-      otp: item.otp || "-----",
+      otp: item.otp || '-----',
       is_verified: item.isVerified ? 'Verified' : 'Not Verified',
       createdAt: item.createdAt,
       roles: item.rolesNames,

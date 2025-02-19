@@ -1,7 +1,4 @@
-import Routes from '@common/defs/routes';
-import { CRUD_ACTION, NavGroup } from '@common/defs/types';
-import Namespaces from '@common/defs/namespaces';
-import { Group } from '@mui/icons-material';
+import { NavGroup } from '@common/defs/types';
 import icons from '@common/defs/icons';
 
 export const menuItems: NavGroup[] = [

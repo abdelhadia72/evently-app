@@ -17,14 +17,7 @@ import { useState, useEffect } from 'react';
 import Logo from '@common/assets/svgs/Logo';
 import Routes from '@common/defs/routes';
 import usePermissions from '@modules/permissions/hooks/usePermissions';
-import {
-  AccountCircle,
-  AddRounded,
-  ChevronRight,
-  Close,
-  ExitToAppOutlined,
-} from '@mui/icons-material';
-import MenuIcon from '@mui/icons-material/Menu';
+import { AddRounded, ChevronRight, Close, ExitToAppOutlined } from '@mui/icons-material';
 import { CRUD_ACTION, NavGroup, NavItem } from '@common/defs/types';
 import { menuItems as menuGroups } from '@common/defs/menu-items';
 import NestedDrawer from '@common/components/lib/navigation/Drawers/NestedDrawer';
@@ -125,7 +118,7 @@ const Leftbar = (props: LeftbarProps) => {
             height: '100%',
             px: 2.5,
             position: 'fixed',
-            top: 0
+            top: 0,
           },
         }}
         sx={{
@@ -156,7 +149,7 @@ const Leftbar = (props: LeftbarProps) => {
         >
           <Stack direction="row" alignItems="center">
             <Logo id="leftbar-logo" sx={{ marginRight: 2 }} />
-            <div style={{fontWeight:'bold', color: "green"}}> Evently </div>
+            <div style={{ fontWeight: 'bold', color: 'green' }}> Evently </div>
             <Typography variant="h6" sx={{ color: 'primary.main' }}>
               {process.env.NEXT_PUBLIC_APP_TITLE}
             </Typography>

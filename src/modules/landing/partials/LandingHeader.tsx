@@ -37,7 +37,12 @@ const LandingHeader = () => {
   };
 
   return (
-    <AppBar position="sticky" color="inherit" elevation={0} sx={{ borderBottom: 1, borderColor: 'divider' }}>
+    <AppBar
+      position="sticky"
+      color="inherit"
+      elevation={0}
+      sx={{ borderBottom: 1, borderColor: 'divider' }}
+    >
       <Container maxWidth="lg">
         <Toolbar disableGutters sx={{ justifyContent: 'space-between' }}>
           <Link href="/" passHref style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -71,8 +76,8 @@ const LandingHeader = () => {
                 }}
               >
                 {menuItems.map((item) => (
-                  <MenuItem 
-                    key={item.label} 
+                  <MenuItem
+                    key={item.label}
                     onClick={handleClose}
                     component={Link}
                     href={item.href}
@@ -80,18 +85,10 @@ const LandingHeader = () => {
                     {item.label}
                   </MenuItem>
                 ))}
-                <MenuItem 
-                  onClick={handleClose} 
-                  component={Link}
-                  href="/auth/login"
-                >
+                <MenuItem onClick={handleClose} component={Link} href="/auth/login">
                   {t('auth.login')}
                 </MenuItem>
-                <MenuItem 
-                  onClick={handleClose} 
-                  component={Link}
-                  href="/auth/register"
-                >
+                <MenuItem onClick={handleClose} component={Link} href="/auth/register">
                   {t('auth.register')}
                 </MenuItem>
               </Menu>
@@ -99,28 +96,14 @@ const LandingHeader = () => {
           ) : (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
               {menuItems.map((item) => (
-                <Button
-                  key={item.label}
-                  component={Link}
-                  href={item.href}
-                  color="inherit"
-                >
+                <Button key={item.label} component={Link} href={item.href} color="inherit">
                   {item.label}
                 </Button>
               ))}
-              <Button
-                component={Link}
-                href="/auth/login"
-                color="inherit"
-              >
+              <Button component={Link} href="/auth/login" color="inherit">
                 {t('auth.login')}
               </Button>
-              <Button
-                component={Link}
-                href="/auth/register"
-                variant="contained"
-                color="primary"
-              >
+              <Button component={Link} href="/auth/register" variant="contained" color="primary">
                 {t('auth.register')}
               </Button>
             </Box>

@@ -15,10 +15,7 @@ const DashboardOverviewPage: NextPage = () => {
       <Container>
         <PageHeader title="Dashboard Overview" />
         <CustomBreadcrumbs
-          links={[
-            { name: t('common:dashboard'), href: Routes.Common.Home },
-            { name: 'Overview' },
-          ]}
+          links={[{ name: t('common:dashboard'), href: Routes.Common.Home }, { name: 'Overview' }]}
         />
         <Box sx={{ mt: 4 }}>
           <Grid container spacing={3}>

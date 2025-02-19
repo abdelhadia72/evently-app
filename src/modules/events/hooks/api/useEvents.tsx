@@ -1,5 +1,5 @@
 import ApiRoutes from '@common/defs/api-routes';
-import useItems, { UseItems, UseItemsOptions, defaultOptions } from '@common/hooks/useItems';
+import useItems, { UseItemsOptions, defaultOptions } from '@common/hooks/useItems';
 import { Event, CreateEventInput, UpdateEventInput } from '@modules/events/defs/types';
 import useApi from '@common/hooks/useApi';
 
@@ -28,17 +28,20 @@ const useEvents = (opts: UseItemsOptions = defaultOptions) => {
 
   const getAttendees = async (eventId: string | string[]) => {
     try {
-      const response = await fetchApi(ApiRoutes.Events.GetAttendees.replace('{id}', eventId.toString()), {
-        method: 'GET',
-        displayProgress: true,
-        displaySuccess: false,
-      });
+      const response = await fetchApi(
+        ApiRoutes.Events.GetAttendees.replace('{id}', eventId.toString()),
+        {
+          method: 'GET',
+          displayProgress: true,
+          displaySuccess: false,
+        }
+      );
 
       if (response.success) {
         return response.data;
       }
 
-      return response.data;;
+      return response.data;
     } catch (error) {
       console.error('Error fetching attendees:', error);
       return { success: false, message: 'Failed to getting attendance' };
@@ -71,7 +74,7 @@ const useEvents = (opts: UseItemsOptions = defaultOptions) => {
     ...rest,
     attend,
     cancelAttendance,
-    getAttendees
+    getAttendees,
   };
 };
 

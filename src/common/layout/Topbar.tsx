@@ -1,4 +1,3 @@
-import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
 import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
 import Routes from '@common/defs/routes';
 import {
@@ -11,7 +10,6 @@ import {
   List,
   ListItem,
   ListItemButton,
-  ListItemIcon,
   ListItemText,
   Toolbar,
   styled,
@@ -105,7 +103,7 @@ const Topbar = ({ onToggle }: TopbarProps) => {
         boxShadow: (theme) => theme.customShadows.z1,
         backgroundColor: 'transparent',
         width: 'fit',
-        height: '64px'
+        height: '64px',
       }}
     >
       <Container maxWidth={false}>
@@ -115,7 +113,7 @@ const Topbar = ({ onToggle }: TopbarProps) => {
             sx={{
               backgroundColor: 'white',
               mr: 2,
-              color: 'grey.700'
+              color: 'grey.700',
             }}
           >
             <MenuIcon />

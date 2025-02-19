@@ -11,35 +11,35 @@ const stats = [
     value: '10,000+',
     label: 'Events Hosted',
     description: 'Successful events organized through our platform',
-    color: '#FF6B6B'
+    color: '#FF6B6B',
   },
   {
     icon: <GroupIcon sx={{ fontSize: 40 }} />,
     value: '1M+',
     label: 'Happy Attendees',
     description: 'People who found their perfect event',
-    color: '#4158D0'
+    color: '#4158D0',
   },
   {
     icon: <BusinessIcon sx={{ fontSize: 40 }} />,
     value: '5,000+',
     label: 'Event Organizers',
     description: 'Professional organizers trust our platform',
-    color: '#43E97B'
+    color: '#43E97B',
   },
   {
     icon: <StarIcon sx={{ fontSize: 40 }} />,
     value: '99%',
     label: 'Satisfaction Rate',
     description: 'From event organizers and attendees',
-    color: '#FA709A'
-  }
+    color: '#FA709A',
+  },
 ];
 
 const PlatformStats = () => {
   return (
-    <Box 
-      sx={{ 
+    <Box
+      sx={{
         py: { xs: 6, md: 8 },
         backgroundColor: (theme) => theme.palette.grey[50],
       }}
@@ -54,7 +54,7 @@ const PlatformStats = () => {
                 mb: 1,
                 fontWeight: 700,
                 color: 'text.primary',
-                fontSize: { xs: '1.75rem', md: '2rem' }
+                fontSize: { xs: '1.75rem', md: '2rem' },
               }}
             >
               Why Choose Evently
@@ -65,7 +65,7 @@ const PlatformStats = () => {
               sx={{
                 maxWidth: '600px',
                 mx: 'auto',
-                fontSize: '1rem'
+                fontSize: '1rem',
               }}
             >
               Join thousands of event organizers who trust our platform
@@ -76,7 +76,7 @@ const PlatformStats = () => {
         <Grid container spacing={2.5}>
           {stats.map((stat, index) => (
             <Grid item xs={12} sm={6} md={3} key={index}>
-              <Fade in timeout={1000 + (index * 200)}>
+              <Fade in timeout={1000 + index * 200}>
                 <Paper
                   elevation={0}
                   sx={{
@@ -94,13 +94,13 @@ const PlatformStats = () => {
                       boxShadow: '0 12px 24px rgba(0,0,0,0.08)',
                       '& .icon-wrapper': {
                         transform: 'scale(1.1)',
-                      }
-                    }
+                      },
+                    },
                   }}
                 >
-                  <Box 
+                  <Box
                     className="icon-wrapper"
-                    sx={{ 
+                    sx={{
                       mb: 2,
                       transition: 'transform 0.3s ease-in-out',
                       display: 'inline-flex',
@@ -126,7 +126,7 @@ const PlatformStats = () => {
                       mb: 1,
                       fontWeight: 600,
                       fontSize: '1rem',
-                      color: 'text.primary'
+                      color: 'text.primary',
                     }}
                   >
                     {stat.label}
@@ -136,7 +136,7 @@ const PlatformStats = () => {
                     sx={{
                       color: 'text.secondary',
                       fontSize: '0.875rem',
-                      lineHeight: 1.5
+                      lineHeight: 1.5,
                     }}
                   >
                     {stat.description}

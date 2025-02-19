@@ -3,7 +3,6 @@ import Users from '@modules/users/defs/routes';
 import Events from '@modules/events/defs/routes';
 
 import Permissions from '@modules/permissions/defs/routes';
-import { CrudAppRoutes } from './types';
 
 const Common = {
   Landing: '/',
@@ -14,13 +13,12 @@ const Common = {
   NotFound: '/404',
 };
 
-
 const Routes = {
   Common,
   Auth,
   Permissions,
   Users,
-  Events
+  Events,
 };
 
 export default Routes;
