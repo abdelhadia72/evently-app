@@ -6,6 +6,11 @@ export enum ROLE {
   ATTENDEE = 'attendee',
 }
 
+export enum PERMISSION {
+  VIEW_DASHBOARD = 'view_dashboard',
+  MANAGE_EVENTS = 'manage_events',
+}
+
 export interface Permission {
   entity: string;
   action: string | CRUD_ACTION | CRUD_ACTION[];

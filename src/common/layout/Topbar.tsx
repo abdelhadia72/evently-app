@@ -14,6 +14,7 @@ import {
   Toolbar,
   styled,
   Avatar,
+  Typography,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useRouter } from 'next/router';
@@ -191,7 +192,10 @@ const Topbar = ({ onToggle }: TopbarProps) => {
                 </ListItem>
               </>
             ) : (
-              <ListItem sx={{ width: 'fit-content' }}>
+              <ListItem sx={{ width: 'fit-content', display: 'flex', alignItems: 'center' }}>
+                <Typography variant="body1" sx={{ marginRight: 1, background: 'black' }}>
+                  {user.email}
+                </Typography>
                 <Button
                   id="basic-button"
                   aria-controls={open ? 'basic-menu' : undefined}
@@ -200,7 +204,7 @@ const Topbar = ({ onToggle }: TopbarProps) => {
                   onClick={handleClick}
                   onMouseEnter={handleClick}
                 >
-                  <Avatar>AB</Avatar>
+                  <Avatar>{user.email.charAt(0).toUpperCase()}</Avatar>
                 </Button>
 
                 <Menu
@@ -369,6 +373,7 @@ const Topbar = ({ onToggle }: TopbarProps) => {
     </AppBar>
   );
 };
+
 const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
   color: theme.palette.grey[700],
   borderRadius: theme.shape.borderRadius + 'px',
@@ -379,4 +384,5 @@ const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
     backgroundColor: theme.palette.primary.main,
   },
 }));
+
 export default Topbar;

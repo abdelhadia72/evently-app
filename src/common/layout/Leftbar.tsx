@@ -28,12 +28,15 @@ import {
   StyledSubheader,
 } from '@common/components/lib/navigation/Drawers/styled-drawer-items';
 import { useTranslation } from 'react-i18next';
+import { ROLE } from '@modules/permissions/defs/types';
 
 interface LeftbarProps {
   open: boolean;
   onToggle: (open: boolean) => void;
 }
+
 export const LEFTBAR_WIDTH = 260;
+
 const Leftbar = (props: LeftbarProps) => {
   const theme = useTheme();
   const { user, logout } = useAuth();
@@ -43,6 +46,7 @@ const Leftbar = (props: LeftbarProps) => {
   const [subNavItems, setSubNavItems] = useState<NavItem[]>();
   const { t } = useTranslation(['leftbar']);
   const open = props.open;
+
   const handleOpenSubDrawer = (items: NavItem[]) => {
     setSubNavItems(items);
   };
@@ -52,6 +56,7 @@ const Leftbar = (props: LeftbarProps) => {
   };
 
   const isMobile = !useMediaQuery(theme.breakpoints.up('sm'));
+
   const toggleLeftbar = () => {
     const newOpen = !open;
     props.onToggle(newOpen);
@@ -71,9 +76,25 @@ const Leftbar = (props: LeftbarProps) => {
     const items = menuItems
       .map((menuItem) => {
         let item = { ...menuItem };
+
+        // dashboard and events for organizer role
+        if (user?.rolesNames[0] === ROLE.ORGANIZER) {
+          if (!menuItem.link.startsWith('/dashboard/events') && menuItem.link !== '/dashboard') {
+            return null;
+          }
+        }
+
+        // Hide all dashboard items from attendee role
+        if (user?.rolesNames[0] === ROLE.ATTENDEE) {
+          if (menuItem.link.startsWith('/dashboard')) {
+            return null;
+          }
+        }
+
         if (menuItem.children && menuItem.children.length > 0) {
           item = { ...item, children: filteredMenuItems(menuItem.children) };
         }
+
         if (
           !menuItem.suffix &&
           menuItem.routes &&
@@ -102,6 +123,7 @@ const Leftbar = (props: LeftbarProps) => {
   useEffect(() => {
     setNavEntries(filteredGroups());
   }, [user]);
+
   return (
     <>
       <Drawer
@@ -166,28 +188,7 @@ const Leftbar = (props: LeftbarProps) => {
             />
           </IconButton>
         </Stack>
-        {/* {user && (
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              padding: theme.spacing(2, 2.5),
-              borderRadius: theme.shape.borderRadius * 1.5 + 'px',
-              backgroundColor: 'action.hover',
-              mb: 5,
-            }}
-          >
-            <AccountCircle fontSize="large" color="action" sx={{ mr: 1 }} />
-            <Box>
-              <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                {user.email}
-              </Typography>
-              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                {user.rolesNames[0]}
-              </Typography>
-            </Box>
-          </Box>
-        )} */}
+
         <Box>
           <List disablePadding>
             {navEntries.map((entry, groupIndex) => (
@@ -215,7 +216,6 @@ const Leftbar = (props: LeftbarProps) => {
                           <Tooltip title={item.suffix.tooltip}>
                             <IconButton
                               size="small"
-                              // on click, stoppropagation to avoid triggering the parent link
                               onClick={(e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
@@ -273,9 +273,7 @@ const Leftbar = (props: LeftbarProps) => {
               display: open ? 'none' : 'block',
               height: 40,
             }}
-          >
-            {/* <MenuIcon fontSize="medium" sx={{ color: 'grey.700', zIndex: '9999'}} /> */}
-          </IconButton>
+          />
         </Box>
       )}
     </>

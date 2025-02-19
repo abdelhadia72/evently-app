@@ -51,6 +51,7 @@ export interface CrudLabels {
 export interface NavGroup {
   text?: string;
   items: NavItem[];
+  roles: ['organizer', 'attendee'];
 }
 export interface NavItem {
   text: string;

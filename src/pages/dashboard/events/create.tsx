@@ -9,6 +9,7 @@ import Namespaces from '@common/defs/namespaces';
 import CreateEventForm from '@modules/events/partials/CreateEventForm';
 import { useTranslation } from 'react-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import { ROLE } from '@modules/permissions/defs/types';
 
 const CreateEventPage: NextPage = () => {
   const { t } = useTranslation(['event', 'common']);
@@ -37,8 +38,10 @@ export const getStaticProps = async ({ locale }: { locale: string }) => ({
 export default withAuth(
   withPermissions(CreateEventPage, {
     requiredPermissions: {
-      entity: Namespaces.Events,
-      action: CRUD_ACTION.CREATE,
+      or: [
+        { entity: Namespaces.Events, action: CRUD_ACTION.CREATE },
+        { entity: 'users', action: ROLE.ORGANIZER },
+      ],
     },
     redirectUrl: Routes.Permissions.Forbidden,
   }),

@@ -1,4 +1,5 @@
 import withAuth, { AUTH_MODE } from '@modules/auth/hocs/withAuth';
+import withPermissions from '@modules/permissions/hocs/withPermissions';
 import { NextPage } from 'next';
 import Routes from '@common/defs/routes';
 import PageHeader from '@common/components/lib/partials/PageHeader';
@@ -7,6 +8,8 @@ import { Box, Grid, Paper, Typography } from '@mui/material';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'react-i18next';
 import { DashboardProvider } from '@modules/dashboard/contexts/DashboardContext';
+import { CRUD_ACTION } from '@common/defs/types';
+import Namespaces from '@common/defs/namespaces';
 // import SuperAdminDashboard from '@modules/dashboard/pages/SuperAdminDashboard';
 // import AdminDashboard from '@modules/dashboard/pages/AdminDashboard';
 
@@ -72,7 +75,24 @@ export const getStaticProps = async ({ locale }: { locale: string }) => ({
   },
 });
 
-export default withAuth(DashboardPage, {
-  mode: AUTH_MODE.LOGGED_IN,
-  redirectUrl: Routes.Auth.Login,
-});
+export default withAuth(
+  withPermissions(DashboardPage, {
+    requiredPermissions: {
+      or: [
+        {
+          entity: Namespaces.Dashboard,
+          action: [CRUD_ACTION.CREATE, CRUD_ACTION.READ, CRUD_ACTION.UPDATE],
+        },
+        {
+          entity: Namespaces.Events,
+          action: [CRUD_ACTION.CREATE, CRUD_ACTION.READ, CRUD_ACTION.UPDATE],
+        },
+      ],
+    },
+    redirectUrl: Routes.Permissions.Forbidden,
+  }),
+  {
+    mode: AUTH_MODE.LOGGED_IN,
+    redirectUrl: Routes.Auth.Login,
+  }
+);

@@ -1,7 +1,9 @@
-import { ComponentType, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { ComponentType, useEffect } from 'react';
+import useAuth from '@modules/auth/hooks/api/useAuth';
 import usePermissions from '@modules/permissions/hooks/usePermissions';
-import { Permission, PermissionCheck } from '@modules/permissions/defs/types';
+import { Permission, PermissionCheck, ROLE } from '@modules/permissions/defs/types';
+import Routes from '@common/defs/routes';
 
 interface WithPermissionsProps {
   requiredPermissions: PermissionCheck;
@@ -13,6 +15,7 @@ const withPermissions = <P extends object>(
   { requiredPermissions, redirectUrl }: WithPermissionsProps
 ): ComponentType<P> => {
   const WithPermissions: ComponentType<P> = (props: P) => {
+    const { user } = useAuth();
     const { can } = usePermissions();
     const router = useRouter();
 
@@ -76,7 +79,31 @@ const withPermissions = <P extends object>(
       if (!hasRequiredPermission) {
         router.replace(redirectUrl);
       }
-    }, [requiredPermissions, redirectUrl, can, router]);
+
+      const ORGANIZER_ALLOWED_ROUTES = [
+        Routes.Common.Landing,
+        Routes.Common.Home,
+        Routes.Common.overview,
+        Routes.Common.events,
+        Routes.Events.ReadAll,
+        '/dashboard/events',
+        '/dashboard/events/create',
+        '/dashboard/events/[id]',
+        '/dashboard/',
+      ];
+
+      // Restrict access based on user role
+      if (user) {
+        const userRoles = user.rolesNames || [];
+        if (userRoles.includes(ROLE.ATTENDEE) && router.pathname.startsWith('/dashboard')) {
+          router.replace(Routes.Common.Landing);
+        } else if (userRoles.includes(ROLE.ORGANIZER)) {
+          if (!ORGANIZER_ALLOWED_ROUTES.includes(router.pathname)) {
+            router.replace(Routes.Common.Home);
+          }
+        }
+      }
+    }, [requiredPermissions, redirectUrl, can, router, user]);
 
     return <WrappedComponent {...props} />;
   };

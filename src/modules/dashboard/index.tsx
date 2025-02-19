@@ -6,6 +6,8 @@ import CustomBreadcrumbs from '@common/components/lib/navigation/CustomBreadCrum
 import { Container } from '@mui/material';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'react-i18next';
+import { PERMISSION, ROLE } from '@modules/permissions/defs/types';
+import withPermissions from '@modules/permissions/hocs/withPermissions';
 
 const DashboardPage: NextPage = () => {
   const { t } = useTranslation(['dashboard', 'common']);
@@ -31,7 +33,23 @@ export const getStaticProps = async ({ locale }: { locale: string }) => ({
   },
 });
 
-export default withAuth(DashboardPage, {
-  mode: AUTH_MODE.LOGGED_IN,
-  redirectUrl: Routes.Auth.Login,
-});
+export default withAuth(
+  withPermissions(DashboardPage, {
+    requiredPermissions: {
+      or: [
+        { entity: 'dashboard', action: PERMISSION.VIEW_DASHBOARD },
+        { entity: 'users', action: ROLE.ORGANIZER },
+      ],
+    },
+    redirectUrl: Routes.Permissions.Forbidden,
+  }),
+  {
+    mode: AUTH_MODE.LOGGED_IN,
+    redirectUrl: Routes.Auth.Login,
+  }
+);
+
+// export default withAuth(DashboardPage, {
+//   mode: AUTH_MODE.LOGGED_IN,
+//   redirectUrl: Routes.Auth.Login,
+// });

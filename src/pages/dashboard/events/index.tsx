@@ -11,8 +11,9 @@ import Namespaces from '@common/defs/namespaces';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'react-i18next';
 import EventTable from '@modules/events/partials/EventTable';
+import { ROLE } from '@modules/permissions/defs/types';
 
-const Eventpage: NextPage = () => {
+const EventPage: NextPage = () => {
   const router = useRouter();
   const { t } = useTranslation(['user']);
   return (
@@ -30,11 +31,7 @@ const Eventpage: NextPage = () => {
         }}
       />
       <CustomBreadcrumbs
-        links={[
-          { name: t('common:dashboard'), href: Routes.Common.Home },
-          // { name: t(`user:${Labels.Users.Items}`) },
-          { name: 'Events' },
-        ]}
+        links={[{ name: t('common:dashboard'), href: Routes.Common.Home }, { name: 'Events' }]}
       />
       <EventTable />
     </>
@@ -48,10 +45,12 @@ export const getStaticProps = async ({ locale }: { locale: string }) => ({
 });
 
 export default withAuth(
-  withPermissions(Eventpage, {
+  withPermissions(EventPage, {
     requiredPermissions: {
-      entity: Namespaces.Users,
-      action: CRUD_ACTION.READ,
+      or: [
+        { entity: Namespaces.Events, action: CRUD_ACTION.READ },
+        { entity: 'users', action: ROLE.ORGANIZER },
+      ],
     },
     redirectUrl: Routes.Permissions.Forbidden,
   }),
