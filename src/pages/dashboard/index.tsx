@@ -3,15 +3,15 @@ import { NextPage } from 'next';
 import Routes from '@common/defs/routes';
 import PageHeader from '@common/components/lib/partials/PageHeader';
 import CustomBreadcrumbs from '@common/components/lib/navigation/CustomBreadCrumbs';
-import { Box, Container, Grid, Paper, Typography } from '@mui/material';
+import { Box, Grid, Paper, Typography } from '@mui/material';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useTranslation } from 'react-i18next';
-import { DashboardProvider, useDashboard } from '@modules/dashboard/contexts/DashboardContext';
-import SuperAdminDashboard from '@modules/dashboard/pages/SuperAdminDashboard';
-import AdminDashboard from '@modules/dashboard/pages/AdminDashboard';
+import { DashboardProvider } from '@modules/dashboard/contexts/DashboardContext';
+// import SuperAdminDashboard from '@modules/dashboard/pages/SuperAdminDashboard';
+// import AdminDashboard from '@modules/dashboard/pages/AdminDashboard';
 
 const DashboardContent = () => {
-  const { isOrganizer, isAdmin } = useDashboard();
+  // const { isOrganizer, isAdmin } = useDashboard();
   const { t } = useTranslation(['dashboard', 'common']);
 
   return (
