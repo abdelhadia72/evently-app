@@ -29,7 +29,6 @@ const footerSections = [
     title: 'Support',
     links: [
       { label: 'Help Center', href: '/help' },
-      { label: 'Contact Us', href: '/contact' },
       { label: 'Privacy Policy', href: '/privacy' },
       { label: 'Terms of Service', href: '/terms' },
     ],
