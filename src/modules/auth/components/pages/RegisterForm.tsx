@@ -30,23 +30,36 @@ const RegisterForm = () => {
     defaultValues: {
       email: '',
       password: '',
+      role: 'attendee',
     },
   });
 
   const {
     handleSubmit,
+    setValue,
     formState: { isSubmitting },
   } = methods;
 
+  const handleUserTypeChange = (_: any, value: string) => {
+    if (value) {
+      setUserType(value);
+      setValue('role', value);
+    }
+  };
+
   const onSubmit = async (data: RegisterInput) => {
-    await register(
-      {
-        email: data.email,
-        password: data.password,
-        role: userType,
-      },
-      { displayProgress: true, displaySuccess: true }
-    );
+    try {
+      console.log('registration data:', data);
+      const result = await register(
+        {
+          email: data.email,
+          password: data.password,
+          role: data.role,
+        },
+        { displayProgress: true, displaySuccess: true }
+      );
+    } catch (error) {
+    }
   };
 
   return (
@@ -100,7 +113,7 @@ const RegisterForm = () => {
                 <ToggleButtonGroup
                   value={userType}
                   exclusive
-                  onChange={(_, value) => value && setUserType(value)}
+                  onChange={handleUserTypeChange} 
                   fullWidth
                   sx={{ 
                     '& .MuiToggleButton-root': {
@@ -221,7 +234,6 @@ const RegisterForm = () => {
         </Card>
       </Box>
 
-      {/* Right Side - Illustration */}
       <Box
         sx={{
           width: '45%',
