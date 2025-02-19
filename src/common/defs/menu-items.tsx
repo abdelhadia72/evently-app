@@ -8,7 +8,7 @@ export const menuItems: NavGroup[] = [
       {
         text: 'Dashboard',
         icon: <icons.dashboard />,
-        link: '/dashboard/overview',
+        link: '/dashboard',
       },
       {
         text: 'Manage Users',
