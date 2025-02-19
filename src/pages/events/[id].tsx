@@ -39,16 +39,18 @@ import {
   FaUsers,
 } from 'react-icons/fa';
 import EventCard from '@modules/landing/components/EventCard';
+import useAuth from '@modules/auth/hooks/api/useAuth';
 
 const EventPage: NextPage = () => {
   const router = useRouter();
+  const { user } = useAuth();
   const theme = useTheme();
   const { id: eventId } = router.query;
   const [event, setEvent] = useState<Event | null>(null);
   const [relatedEvents, setRelatedEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
-  const { readOne, readAll } = useEvents();
+  const { readOne, readAll, attend } = useEvents();
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -57,7 +59,6 @@ const EventPage: NextPage = () => {
           const response = await readOne(Number(eventId));
           if (response.success && response.data) {
             setEvent(response.data);
-            // Fetch related events
             const allEventsResponse = await readAll();
             if (allEventsResponse.success && allEventsResponse.data.items) {
               const filtered = allEventsResponse.data.items
@@ -160,6 +161,13 @@ const EventPage: NextPage = () => {
                       </Box>
 
                       <Button
+                        onClick={() => {
+                          if (user) {
+                            attend(eventId);
+                          } else {
+                            router.push('/auth/login');
+                          }
+                        }}
                         fullWidth
                         size="large"
                         variant="contained"

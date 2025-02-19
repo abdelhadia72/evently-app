@@ -10,6 +10,8 @@ export interface Event {
   category: string;
   status: string;
   imageUrl?: string;
+  currentAttendees?: number;
+  isUserAttending?: boolean;
 }
 
 export interface CreateEventInput {
