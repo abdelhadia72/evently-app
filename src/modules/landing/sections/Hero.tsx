@@ -1,10 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Container, Typography, Button, TextField, InputAdornment } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import PopularCategories from './PopularCategories';
+import { useRouter } from 'next/router';
 
 const Hero = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const router = useRouter();
+
+  const handleSearch = async () => {
+    if (searchQuery.trim()) {
+      setIsSearching(true);
+      await router.push(`/events?query=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearching(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -12,7 +29,9 @@ const Hero = () => {
         background: 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url("/images/photos/hero-bg.jpg")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        py: { xs: 10, md: 15 },
+        height: { xs: '75vh', md: '80vh' },
+        display: 'flex',
+        alignItems: 'center',
         color: 'white',
         '&::after': {
           content: '""',
@@ -29,69 +48,135 @@ const Hero = () => {
     >
       <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
         <Box sx={{ textAlign: 'center', mb: 6 }}>
-          <Typography variant="h2" component="h1" sx={{ mb: 2, fontWeight: 700 }}>
+          <Typography 
+            variant="h1" 
+            sx={{ 
+              mb: 3,
+              fontWeight: 800,
+              fontSize: { xs: '2.5rem', md: '4rem' },
+              textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
+            }}
+          >
             Find Your Next Event
           </Typography>
-          <Typography variant="h5" sx={{ mb: 4, fontWeight: 400 }}>
-            Discover events that match your passions
+          <Typography 
+            variant="h5" 
+            sx={{ 
+              mb: 6,
+              fontWeight: 400,
+              opacity: 0.9,
+              maxWidth: '600px',
+              mx: 'auto',
+              textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
+            }}
+          >
+            Discover amazing events happening near you
           </Typography>
         </Box>
 
         <Box
           sx={{
             display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
             gap: 2,
-            maxWidth: 800,
+            maxWidth: 600,
             mx: 'auto',
             backgroundColor: 'white',
             p: 2,
-            borderRadius: 1,
-            boxShadow: '0 4px 20px rgba(0,0,0,0.25)'
+            borderRadius: 2,
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
           }}
         >
           <TextField
             fullWidth
-            placeholder="Search for events"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Search for events..."
             variant="outlined"
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon />
+                  <SearchIcon sx={{ color: 'text.secondary' }} />
                 </InputAdornment>
               ),
+              sx: {
+                color: 'text.primary',
+                backgroundColor: 'white',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'divider',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'primary.main',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'primary.main',
+                  borderWidth: '2px',
+                },
+                '& .MuiInputBase-input::placeholder': {
+                  color: 'text.secondary',
+                  opacity: 1,
+                },
+                '& .MuiInputBase-input': {
+                  color: 'text.primary',
+                },
+                transition: 'all 0.2s ease-in-out',
+              }
             }}
-            sx={{ bgcolor: 'white', flex: 2 }}
-          />
-          <TextField
-            fullWidth
-            placeholder="Location"
-            variant="outlined"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <LocationOnIcon />
-                </InputAdornment>
-              ),
-            }}
-            sx={{ bgcolor: 'white', flex: 1 }}
           />
           <Button
             variant="contained"
             size="large"
+            onClick={handleSearch}
+            disabled={isSearching}
             sx={{
-              height: '56px',
               px: 4,
-              bgcolor: 'primary.main',
+              backgroundColor: 'primary.main',
+              color: 'white',
+              position: 'relative',
+              overflow: 'hidden',
               '&:hover': {
-                bgcolor: 'primary.dark',
+                backgroundColor: 'primary.dark',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
               },
+              '&:active': {
+                transform: 'translateY(0)',
+                boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  width: 0,
+                  height: 0,
+                  backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                  borderRadius: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  animation: 'ripple 0.6s linear',
+                },
+              },
+              '@keyframes ripple': {
+                '0%': {
+                  width: 0,
+                  height: 0,
+                  opacity: 0.5,
+                },
+                '100%': {
+                  width: '500px',
+                  height: '500px',
+                  opacity: 0,
+                },
+              },
+              '&.Mui-disabled': {
+                backgroundColor: 'primary.light',
+                color: 'white',
+              },
+              transition: 'all 0.2s ease-in-out',
             }}
           >
-            Search
+            {isSearching ? 'Searching...' : 'Search'}
           </Button>
         </Box>
-
       </Container>
     </Box>
   );

@@ -55,7 +55,7 @@ const CategoryButton: React.FC<CategoryButtonProps> = ({ category }) => {
       flexDirection: 'column', 
       alignItems: 'center',
       gap: 2,
-      m: 2 // Add margin for better spacing
+      m: 2
     }}>
       <IconButton 
         onClick={handleClick}
@@ -89,7 +89,7 @@ const CategoryButton: React.FC<CategoryButtonProps> = ({ category }) => {
       <Typography 
         variant="subtitle1" 
         sx={{ 
-          color: 'black', // Change text color to black
+          color: 'black',
           fontWeight: 500,
           fontSize: '0.95rem',
           opacity: 0.9,
