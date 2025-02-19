@@ -5,9 +5,10 @@ import {
   StyledListItemButton,
   StyledListItemIcon,
 } from '@common/components/lib/navigation/Drawers/styled-drawer-items';
+import { MoreVert as ChevronRight } from '@mui/icons-material';
 import { NextRouter } from 'next/router';
 import { useState } from 'react';
-import { ChevronRight } from '@mui/icons-material';
+import Link from 'next/link';
 
 interface NestedDrawerProps {
   navItems: NavItem[];
@@ -20,17 +21,20 @@ interface NestedDrawerProps {
 
 const NestedDrawer = (props: NestedDrawerProps) => {
   const { navItems, leftBarWidth, open, isMobile, router, level } = props;
-  const [subNavItems, setSubNavItems] = useState<NavItem[]>();
-  const handleOpenSubDrawer = (items: NavItem[]) => {
-    setSubNavItems(items);
+  const [subNavItems, setSubNavItems] = useState<NavItem[]>([]);
+
+  const handleOpenSubDrawer = (items: NavItem[] | undefined) => {
+    setSubNavItems(items || []);
   };
+
   const handleCloseSubDrawer = () => {
     setSubNavItems([]);
   };
+
   return (
     <Drawer
       anchor="left"
-      onMouseLeave={() => handleCloseSubDrawer()}
+      onMouseLeave={handleCloseSubDrawer}
       open={open}
       variant={isMobile ? 'temporary' : 'persistent'}
       PaperProps={{
@@ -47,9 +51,9 @@ const NestedDrawer = (props: NestedDrawerProps) => {
         display: open ? 'block' : 'none',
       }}
     >
-      {subNavItems !== undefined && subNavItems.length > 0 && (
+      {subNavItems.length > 0 && (
         <NestedDrawer
-          open={subNavItems !== undefined && subNavItems.length > 0}
+          open={Boolean(subNavItems.length)}
           leftBarWidth={leftBarWidth}
           navItems={subNavItems}
           isMobile={isMobile}
@@ -61,32 +65,35 @@ const NestedDrawer = (props: NestedDrawerProps) => {
       <Box>
         <List disablePadding>
           {navItems.map((item, itemIndex) => {
-            let link = item.link;
-            if (link.length > 1) {
-              link = item.link.endsWith('/') ? item.link.slice(0, -1) : item.link;
-            }
+            const link = item.link?.length > 1 
+              ? item.link.endsWith('/') 
+                ? item.link.slice(0, -1) 
+                : item.link
+              : item.link || '/';
+
             return (
-              <StyledLinkNavItem
+              <Box
                 key={itemIndex}
-                passHref
+                component={Link}
                 href={link}
-                className={`${router.pathname === link ? 'active' : ''}`}
+                passHref
+                style={{ textDecoration: 'none', color: 'inherit' }}
               >
                 <StyledListItemButton
-                  onMouseEnter={() => handleOpenSubDrawer(item.children || [])}
+                  onMouseEnter={() => handleOpenSubDrawer(item.children)}
                   disableGutters
+                  className={router.pathname === link ? 'active' : ''}
                 >
                   <StyledListItemIcon>{item.icon}</StyledListItemIcon>
                   <ListItemText disableTypography primary={item.text} />
                   {item.suffix && (
-                    <Tooltip title={item.suffix.tooltip}>
+                    <Tooltip title={item.suffix.tooltip || ''}>
                       <IconButton
                         size="small"
-                        // on click, stoppropagation to avoid triggering the parent link
                         onClick={(e) => {
                           e.stopPropagation();
                           e.preventDefault();
-                          if (item.suffix) {
+                          if (item.suffix?.link) {
                             router.push(item.suffix.link);
                           }
                         }}
@@ -95,9 +102,9 @@ const NestedDrawer = (props: NestedDrawerProps) => {
                       </IconButton>
                     </Tooltip>
                   )}
-                  {item.children && item.children.length > 0 && <ChevronRight />}
+                  {(item.children || []).length > 0 && <ChevronRight />}
                 </StyledListItemButton>
-              </StyledLinkNavItem>
+              </Box>
             );
           })}
         </List>
