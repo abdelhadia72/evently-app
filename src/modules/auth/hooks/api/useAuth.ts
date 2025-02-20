@@ -6,6 +6,7 @@ import useSWR from 'swr';
 
 export interface VerifyInput {
   otp: string;
+  email: string;
 }
 
 export interface LoginInput {

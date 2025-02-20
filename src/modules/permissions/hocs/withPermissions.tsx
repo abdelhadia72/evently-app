@@ -91,6 +91,17 @@ const withPermissions = <P extends object>(
         '/dashboard/events/[id]',
         '/dashboard/',
       ];
+      const currentPath = router.pathname;
+      if (user && !user.isVerified && router.pathname !== Routes.Auth.Verify) {
+        sessionStorage.setItem('redirectPath', currentPath);
+        router.push(Routes.Auth.Verify);
+      }
+
+      if (user && user.isVerified && router.pathname === Routes.Auth.Verify) {
+        const redirectPath = sessionStorage.getItem('redirectPath') || Routes.Common.Home;
+        sessionStorage.removeItem('redirectPath');
+        router.push(redirectPath);
+      }
 
       // Restrict access based on user role
       if (user) {
@@ -99,7 +110,7 @@ const withPermissions = <P extends object>(
           router.replace(Routes.Common.Landing);
         } else if (userRoles.includes(ROLE.ORGANIZER)) {
           if (!ORGANIZER_ALLOWED_ROUTES.includes(router.pathname)) {
-            router.replace(Routes.Common.Home);
+            router.replace(Routes.Common.Landing);
           }
         }
       }

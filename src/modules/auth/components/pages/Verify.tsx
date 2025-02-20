@@ -7,29 +7,27 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import useAuth, { VerifyInput } from '@modules/auth/hooks/api/useAuth';
 import Routes from '@common/defs/routes';
-import { useTranslation } from 'react-i18next';
+import { LoadingButton } from '@mui/lab';
 
 const Verify = () => {
   const { user, verify, resendOtp } = useAuth();
   const router = useRouter();
   const [isResending, setIsResending] = useState(false);
-  const { t } = useTranslation(['auth', 'common']);
-  // const email = router.query.email as string;
-  const email = user?.email;
+  const email = user?.email || '';
 
   const VerifySchema = Yup.object().shape({
     email: Yup.string().required(),
     otp: Yup.string()
-      .required(t('common:field_required'))
-      .matches(/^[0-9]+$/, t('auth:invalid_otp'))
-      .min(6, t('auth:min_length_error'))
-      .max(6, t('auth:max_length_error')),
+      .required('This field is required')
+      .matches(/^[0-9]+$/, 'Invalid OTP code')
+      .min(6, 'OTP must be at least 6 characters')
+      .max(6, 'OTP must not exceed 6 characters'),
   });
 
   const methods = useForm<VerifyInput>({
     resolver: yupResolver(VerifySchema),
     defaultValues: {
-      email: email || '',
+      email,
       otp: '',
     },
   });
@@ -37,12 +35,15 @@ const Verify = () => {
   const {
     handleSubmit,
     formState: { isSubmitting },
+    reset,
   } = methods;
 
   const onSubmit = async (data: VerifyInput) => {
     const response = await verify(data, { displayProgress: true, displaySuccess: true });
 
-    if (response.success) {
+    if (!response.success) {
+      reset({ ...data, otp: '' });
+    } else {
       router.push(Routes.Common.Home);
     }
   };
@@ -57,34 +58,52 @@ const Verify = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 480, mx: 'auto', p: 3 }}>
-      <Typography variant="h4" paragraph textAlign="center">
-        {t('auth:verify_otp_title')}
-      </Typography>
+    <Box
+      sx={{
+        maxWidth: 480,
+        mx: 'auto',
+        p: 3,
+        minHeight: '80vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Box>
+        <Typography variant="h4" paragraph textAlign="center">
+          Verify OTP
+        </Typography>
+        <Typography sx={{ color: 'text.secondary', mb: 5 }} textAlign="center">
+          Please enter the verification code sent to your email address
+        </Typography>
 
-      <Typography sx={{ color: 'text.secondary', mb: 5 }} textAlign="center">
-        {t('auth:verify_otp_description')}
-      </Typography>
+        <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <input type="hidden" {...methods.register('email')} />
+            <RHFTextField name="otp" label="OTP Code" autoComplete="off" />
 
-      <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <RHFTextField name="otp" label={t('auth:otp_code')} />
+            <LoadingButton
+              fullWidth
+              size="large"
+              type="submit"
+              variant="contained"
+              loading={isSubmitting}
+            >
+              Verify OTP
+            </LoadingButton>
 
-          <Button fullWidth size="large" type="submit" variant="contained" loading={isSubmitting}>
-            {t('auth:verify_otp')}
-          </Button>
-
-          <Button
-            fullWidth
-            size="large"
-            variant="outlined"
-            disabled={isResending}
-            onClick={handleResendOtp}
-          >
-            {t('auth:resend_otp')}
-          </Button>
-        </Box>
-      </FormProvider>
+            <Button
+              fullWidth
+              size="large"
+              variant="outlined"
+              disabled={isResending}
+              onClick={handleResendOtp}
+            >
+              Resend OTP
+            </Button>
+          </Box>
+        </FormProvider>
+      </Box>
     </Box>
   );
 };
