@@ -4,6 +4,10 @@ import { User } from '@modules/users/defs/types';
 import { useState } from 'react';
 import useSWR from 'swr';
 
+export interface VerifyInput {
+  otp: string;
+}
+
 export interface LoginInput {
   email: string;
   password: string;
@@ -26,7 +30,6 @@ export interface ResetPasswordInput {
   passwordConfirmation: string;
   token: string;
 }
-
 interface AuthData {
   user: User | null;
   login: (
@@ -46,6 +49,8 @@ interface AuthData {
     _input: ResetPasswordInput,
     _options?: FetchApiOptions
   ) => Promise<ApiResponse<{ token: string }>>;
+  verify: (_input: VerifyInput, _options?: FetchApiOptions) => Promise<ApiResponse<null>>;
+  resendOtp: (_input: VerifyInput, _options?: FetchApiOptions) => Promise<ApiResponse<null>>;
   initialized: boolean; // This is used to prevent the app from rendering before the useAuth initial fetch is complete
 }
 
@@ -60,6 +65,8 @@ const useAuth = (): AuthData => {
       logout: async () => ({ success: false, errors: ['Auth is disabled'] }),
       requestPasswordReset: async () => ({ success: false, errors: ['Auth is disabled'] }),
       resetPassword: async () => ({ success: false, errors: ['Auth is disabled'] }),
+      verify: async () => ({ success: false, errors: ['Auth is disabled'] }),
+      resendOtp: async () => ({ success: false, errors: ['Auth is disabled'] }),
     };
   }
 
@@ -141,6 +148,30 @@ const useAuth = (): AuthData => {
     return response;
   };
 
+  const verify = async (input: VerifyInput, options?: FetchApiOptions) => {
+    const response = await fetchApi<null>(ApiRoutes.Auth.VerifyOtp, {
+      method: 'POST',
+      data: input,
+      ...options,
+    });
+
+    if (response.success) {
+      mutate();
+    }
+
+    return response;
+  };
+
+  const resendOtp = async (input: VerifyInput, options?: FetchApiOptions) => {
+    const response = await fetchApi<null>(ApiRoutes.Auth.ResendOtp, {
+      method: 'POST',
+      data: input,
+      ...options,
+    });
+
+    return response;
+  };
+
   return {
     user: user ?? null,
     login,
@@ -148,6 +179,8 @@ const useAuth = (): AuthData => {
     logout,
     requestPasswordReset,
     resetPassword,
+    verify,
+    resendOtp,
     initialized,
   };
 };

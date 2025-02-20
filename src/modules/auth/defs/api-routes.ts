@@ -6,6 +6,8 @@ const ApiRoutes = {
   RequestPasswordReset: prefix + '/request-password-reset',
   ResetPassword: prefix + '/reset-password',
   Me: prefix + '/me',
+  VerifyOtp: prefix + '/verify-otp',
+  ResendOtp: prefix + '/resend-otp',
 };
 
 export default ApiRoutes;
