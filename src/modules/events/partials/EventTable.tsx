@@ -6,6 +6,8 @@ import dayjs from 'dayjs';
 import { Event, CreateEventInput, UpdateEventInput } from '@modules/events/defs/types';
 import Namespaces from '@common/defs/namespaces';
 import useEvents from '@modules/events/hooks/api/useEvents';
+import { ROLE } from '@modules/permissions/defs/types';
+import useAuth from '@modules/auth/hooks/api/useAuth';
 
 interface Row extends CrudRow {
   title: string;
@@ -18,6 +20,9 @@ interface Row extends CrudRow {
 }
 
 const EventTable = () => {
+  const { user } = useAuth();
+  const isAdmin = user?.rolesNames.includes(ROLE.ADMIN);
+  const isOrganizer = user?.rolesNames.includes(ROLE.ORGANIZER);
   const columns: GridColumns<Row> = [
     {
       field: 'title',
@@ -79,6 +84,7 @@ const EventTable = () => {
         showDelete={() => true}
         showLock
         exportable
+        filterByOrganizer={isOrganizer ? user?.id : undefined}
       />
     </>
   );

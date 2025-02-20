@@ -23,6 +23,8 @@ import { GridRowHeightParams, GridRowHeightReturnValue } from '@mui/x-data-grid-
 import { useDialogContext } from '@common/contexts/DialogContext';
 import { useTranslation } from 'react-i18next';
 import { FetchApiOptions } from '@common/hooks/useApi';
+import useAuth from '@modules/auth/hooks/api/useAuth';
+import { ROLE } from '@modules/permissions/defs/types';
 
 interface ItemsTableProps<Item, CreateOneInput, UpdateOneInput, Row> {
   namespace: string;
@@ -43,6 +45,7 @@ interface ItemsTableProps<Item, CreateOneInput, UpdateOneInput, Row> {
   filterModel?: GridFilterModel;
   sortModel?: GridSortModel;
   refreshIndex?: number;
+  filterByOrganizer?: number;
 }
 
 export interface RowAction<Item> {
@@ -51,6 +54,7 @@ export interface RowAction<Item> {
   onClick?: (id: Id, item: Item, refreshRows: () => void) => void;
   enabled?: (id: Id, item: Item) => boolean;
 }
+
 const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
   props: ItemsTableProps<Item, CreateOneInput, UpdateOneInput, Row>
 ) => {
@@ -71,7 +75,12 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
     filterModel: propFilterModel,
     sortModel: propSortModel,
     refreshIndex,
+    filterByOrganizer,
   } = props;
+
+  const { user } = useAuth();
+  const isOrganizer = user?.rolesNames.includes(ROLE.ORGANIZER);
+
   const { items, paginationMeta, readAll, deleteOne, mutate } = useItems(useItemsOptions);
   const [rows, setRows] = useState<Row[]>([]);
   const [columns, setColumns] = useState<GridColumns>([]);
@@ -108,7 +117,14 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
 
   useEffect(() => {
     if (items && items.length > 0) {
-      const itemsRows = items.map(itemToRow);
+      let filteredItems = items;
+
+      // items for organizer filtered
+      if (isOrganizer && filterByOrganizer && user) {
+        filteredItems = items.filter((item) => (item as Any).organizerId === user.id);
+      }
+
+      const itemsRows = filteredItems.map(itemToRow);
       setRows([...itemsRows]);
 
       const actionsColumn: GridEnrichedColDef<Row> = {
@@ -147,7 +163,7 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
       setRows([]);
       setColumns([...initColumns]);
     }
-  }, [items, currentLanguage]);
+  }, [items, currentLanguage, isOrganizer, filterByOrganizer]);
 
   useEffect(() => {
     let filterParam: FilterParam | undefined;
@@ -167,8 +183,19 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
       };
     }
 
-    readAll(page + 1, pageSize, sortParam, filterParam ? [filterParam] : []);
-  }, [page, pageSize, sortModel, filterModel]);
+    const filters = filterParam ? [filterParam] : [];
+
+    // organizer filter
+    if (isOrganizer && filterByOrganizer && user) {
+      filters.push({
+        filterColumn: 'organizerId',
+        filterOperator: 'equals',
+        filterValue: user.id,
+      });
+    }
+
+    readAll(page + 1, pageSize, sortParam, filters);
+  }, [page, pageSize, sortModel, filterModel, isOrganizer, filterByOrganizer]);
 
   useEffect(() => {
     mutate();
@@ -246,8 +273,7 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
   );
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-interface RowActionCellProps<Item, CreateOneInput, UpdateOneInput> {
+interface RowActionCellProps<Item> {
   id: Id;
   item: Item;
   namespace: string;
@@ -260,9 +286,7 @@ interface RowActionCellProps<Item, CreateOneInput, UpdateOneInput> {
   showLock?: boolean;
 }
 
-const RowActionCell = <Item, CreateOneInput, UpdateOneInput>(
-  props: RowActionCellProps<Item, CreateOneInput, UpdateOneInput>
-) => {
+const RowActionCell = <Item,>(props: RowActionCellProps<Item>) => {
   const { id, item, namespace, routes, deleteOne, actions, refreshRows, showLock = true } = props;
   const { openConfirmDialog } = useDialogContext();
   const showEdit = props.showEdit ? props.showEdit(id, item) : true;
