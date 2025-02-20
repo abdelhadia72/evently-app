@@ -22,7 +22,7 @@ import React, { useState } from 'react';
 import useAuth from '@modules/auth/hooks/api/useAuth';
 import Stack from '@mui/material/Stack';
 import Logo from '@common/assets/svgs/Logo';
-import { ArrowForwardIos, Logout } from '@mui/icons-material';
+import { ArrowForwardIos, Logout, Home } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -72,6 +72,10 @@ const Topbar = ({ onToggle }: TopbarProps) => {
   const handleLogoutClick = () => {
     handleClose();
     logout();
+  };
+
+  const handleHomeClick = () => {
+    router.push(Routes.Common.Landing);
   };
 
   const onAuthButtonClick = (mode: string) => {
@@ -193,8 +197,11 @@ const Topbar = ({ onToggle }: TopbarProps) => {
               </>
             ) : (
               <ListItem sx={{ width: 'fit-content', display: 'flex', alignItems: 'center' }}>
-                <Typography variant="body1" sx={{ marginRight: 1, background: 'black' }}>
-                  {user.email}
+                <IconButton onClick={handleHomeClick} sx={{ mr: 2, color: 'grey.700' }}>
+                  <Home />
+                </IconButton>
+                <Typography variant="body1" sx={{ marginRight: 1, color: 'black' }}>
+                  {user.email} - {user.rolesNames[0]}
                 </Typography>
                 <Button
                   id="basic-button"
@@ -292,7 +299,7 @@ const Topbar = ({ onToggle }: TopbarProps) => {
                     }),
                   }}
                 >
-                  Mon Profil
+                  Profile
                 </ListItemText>
               </ListItemButton>
             </ListItem>
@@ -360,9 +367,11 @@ const Topbar = ({ onToggle }: TopbarProps) => {
                 }}
                 sx={{
                   display: 'flex',
+                  flex: 1,
+                  width: '100%',
+                  textAlign: 'start',
                 }}
                 startIcon={<Logout />}
-                variant="outlined"
               >
                 {t('topbar:logged.logout')}
               </Button>

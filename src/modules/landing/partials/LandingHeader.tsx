@@ -11,10 +11,13 @@ import {
   MenuItem,
   useMediaQuery,
   useTheme,
+  Avatar,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import LogoutIcon from '@mui/icons-material/Logout';
 import Link from 'next/link';
 import { useTranslation } from 'next-i18next';
+import useAuth from '@modules/auth/hooks/api/useAuth';
 
 const menuItems = [
   { label: 'Browse Events', href: '/dashboard/events' },
@@ -26,6 +29,7 @@ const LandingHeader = () => {
   const { t } = useTranslation('topbar');
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { user, logout } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -35,6 +39,13 @@ const LandingHeader = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleLogout = () => {
+    logout();
+    handleClose();
+  };
+
+  const isAdminOrOrganizer = user && ['admin', 'organizer'].includes(user.rolesNames?.[0]);
 
   return (
     <AppBar
@@ -85,12 +96,32 @@ const LandingHeader = () => {
                     {item.label}
                   </MenuItem>
                 ))}
-                <MenuItem onClick={handleClose} component={Link} href="/auth/login">
-                  {t('login')}
-                </MenuItem>
-                <MenuItem onClick={handleClose} component={Link} href="/auth/register">
-                  {t('register')}
-                </MenuItem>
+                {!user && (
+                  <>
+                    <MenuItem onClick={handleClose} component={Link} href="/auth/login">
+                      {t('login')}
+                    </MenuItem>
+                    <MenuItem onClick={handleClose} component={Link} href="/auth/register">
+                      {t('register')}
+                    </MenuItem>
+                  </>
+                )}
+                {user && !isAdminOrOrganizer && (
+                  <MenuItem onClick={handleClose} component={Link} href="/me">
+                    My Profile
+                  </MenuItem>
+                )}
+                {isAdminOrOrganizer && (
+                  <MenuItem onClick={handleClose} component={Link} href="/dashboard">
+                    Dashboard
+                  </MenuItem>
+                )}
+                {user && (
+                  <MenuItem onClick={handleLogout}>
+                    <LogoutIcon sx={{ mr: 1 }} />
+                    Logout
+                  </MenuItem>
+                )}
               </Menu>
             </>
           ) : (
@@ -100,12 +131,39 @@ const LandingHeader = () => {
                   {item.label}
                 </Button>
               ))}
-              <Button component={Link} href="/auth/login" color="inherit">
-                {t('login')}
-              </Button>
-              <Button component={Link} href="/auth/register" variant="contained" color="primary">
-                {t('register')}
-              </Button>
+              {user ? (
+                <>
+                  <Button
+                    component={Link}
+                    href={isAdminOrOrganizer ? '/dashboard' : '/me'}
+                    color="inherit"
+                    startIcon={
+                      <Avatar sx={{ width: 32, height: 32 }}>
+                        {user.email.charAt(0).toUpperCase()}
+                      </Avatar>
+                    }
+                  >
+                    {isAdminOrOrganizer ? 'Dashboard' : 'My Profile'}
+                  </Button>
+                  <IconButton color="inherit" onClick={handleLogout}>
+                    <LogoutIcon />
+                  </IconButton>
+                </>
+              ) : (
+                <>
+                  <Button component={Link} href="/auth/login" color="inherit">
+                    {t('login')}
+                  </Button>
+                  <Button
+                    component={Link}
+                    href="/auth/register"
+                    variant="contained"
+                    color="primary"
+                  >
+                    {t('register')}
+                  </Button>
+                </>
+              )}
             </Box>
           )}
         </Toolbar>
