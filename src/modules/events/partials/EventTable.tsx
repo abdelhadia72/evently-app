@@ -21,7 +21,6 @@ interface Row extends CrudRow {
 
 const EventTable = () => {
   const { user } = useAuth();
-  const isAdmin = user?.rolesNames.includes(ROLE.ADMIN);
   const isOrganizer = user?.rolesNames.includes(ROLE.ORGANIZER);
   const columns: GridColumns<Row> = [
     {
