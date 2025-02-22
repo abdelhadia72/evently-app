@@ -119,7 +119,6 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
     if (items && items.length > 0) {
       let filteredItems = items;
 
-      // items for organizer filtered
       if (isOrganizer && filterByOrganizer && user) {
         filteredItems = items.filter((item) => (item as Any).organizerId === user.id);
       }
@@ -185,7 +184,6 @@ const ItemsTable = <Item, CreateOneInput, UpdateOneInput, Row extends CrudRow>(
 
     const filters = filterParam ? [filterParam] : [];
 
-    // organizer filter
     if (isOrganizer && filterByOrganizer && user) {
       filters.push({
         filterColumn: 'organizerId',
@@ -370,18 +368,18 @@ const RowActionCell = <Item,>(props: RowActionCellProps<Item>) => {
             onClick={() => {
               handleMenuClose();
               openConfirmDialog(
-                'Supprimer',
-                'Êtes-vous sûr de vouloir supprimer cet élément ? Cette action est irréversible.',
+                'Delete',
+                'Are you sure you want to delete this item? This action is irreversible.',
                 () => {
                   deleteOne(id, { displayProgress: true, displaySuccess: true });
                 },
-                'Oui, supprimer',
+                'Yes, delete',
                 'error'
               );
             }}
             sx={{ color: 'error.main' }}
           >
-            <DeleteOutline /> Supprimer
+            <DeleteOutline /> Remove
           </MenuItem>
         )}
       </MenuPopover>

@@ -25,9 +25,10 @@ export interface CreateEventInput {
   endTime?: string;
   category: string;
   status: string;
-  imageUrl?: string;
+  image: File | null;
 }
 
 export interface UpdateEventInput extends Partial<CreateEventInput> {
   id: number;
+  image?: File | null;
 }

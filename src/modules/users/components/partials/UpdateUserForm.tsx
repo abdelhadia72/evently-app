@@ -13,11 +13,6 @@ interface UpdateUserFormProps {
   item: User;
 }
 
-const VERIFY_OPTIONS = [
-  { value: 'true', label: 'common:yes' },
-  { value: 'false', label: 'common:no' },
-];
-
 const UpdateUserForm = (props: UpdateUserFormProps) => {
   const { item } = props;
   const { t } = useTranslation(['common']);
@@ -55,15 +50,6 @@ const UpdateUserForm = (props: UpdateUserFormProps) => {
           </Grid>
           <Grid item xs={6}>
             <RHFTextField name="password" label={t('common:password')} type="password" />
-          </Grid>
-          <Grid item xs={6}>
-            <RHFSelect name="isVerified" label={t('common:verify')}>
-              {VERIFY_OPTIONS.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {t(option.label)}
-                </MenuItem>
-              ))}
-            </RHFSelect>
           </Grid>
           <Grid item xs={6}>
             <RHFSelect name="role" label={t('common:role')}>
