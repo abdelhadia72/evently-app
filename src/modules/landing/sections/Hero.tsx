@@ -11,7 +11,7 @@ const Hero = () => {
   const handleSearch = async () => {
     if (searchQuery.trim()) {
       setIsSearching(true);
-      await router.push(`/events?query=${encodeURIComponent(searchQuery.trim())}`);
+      await router.push(`/events?category=${encodeURIComponent(searchQuery.trim())}`);
       setIsSearching(false);
     }
   };
@@ -20,6 +20,10 @@ const Hero = () => {
     if (e.key === 'Enter') {
       handleSearch();
     }
+  };
+
+  const handleCategoryClick = (category: string) => {
+    router.push(`/events?category=${encodeURIComponent(category)}`);
   };
 
   return (
@@ -176,6 +180,7 @@ const Hero = () => {
             {['Conferences', 'Workshops', 'Concerts', 'Sports', 'Art & Culture'].map((tag) => (
               <Box
                 key={tag}
+                onClick={() => handleCategoryClick(tag)}
                 sx={{
                   px: 2,
                   py: 1,
@@ -190,6 +195,7 @@ const Hero = () => {
                   '&:hover': {
                     backgroundColor: 'rgba(255, 255, 255, 0.2)',
                     transform: 'translateY(-2px)',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                   },
                 }}
               >
