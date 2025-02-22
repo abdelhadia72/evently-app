@@ -1,27 +1,13 @@
 import { NextPage } from 'next';
 import withAuth, { AUTH_MODE } from '@modules/auth/hocs/withAuth';
 import Routes from '@common/defs/routes';
-import {
-  Box,
-  Card,
-  Grid,
-  Typography,
-  Chip,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  CircularProgress,
-} from '@mui/material';
+import { Box, Card, Grid, Typography, CircularProgress } from '@mui/material';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import PageHeader from '@common/components/lib/partials/PageHeader';
 import FormProvider, { RHFTextField } from '@common/components/lib/react-hook-form';
 import { useForm } from 'react-hook-form';
-import { LoadingButton, Pagination } from '@mui/lab';
+import { LoadingButton } from '@mui/lab';
 import useAuth from '@modules/auth/hooks/api/useAuth';
 import { LockOpen } from '@mui/icons-material';
 import useUsers, { UpdateOneInput } from '@modules/users/hooks/api/useUsers';
@@ -30,11 +16,23 @@ import { useEffect, useState } from 'react';
 import useTickets from '@modules/tickets/hooks/api/useTickets';
 import TicketCard from '@modules/tickets/components/TicketCard';
 
+interface Ticket {
+  id: number;
+  ticketNumber: string;
+  status: string;
+  qrCode: string;
+  event: {
+    title: string;
+    startDate: string;
+    location: string;
+  };
+}
+
 const MyProfile: NextPage = () => {
   const { user } = useAuth();
   const { updateOne } = useUsers();
   const ticketsHook = useTickets();
-  const [tickets, setTickets] = useState<any[]>([]);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {

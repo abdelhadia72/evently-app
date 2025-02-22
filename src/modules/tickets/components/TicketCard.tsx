@@ -1,6 +1,6 @@
 import { Box, Card, Typography, Chip, Grid } from '@mui/material';
 import { format } from 'date-fns';
-import QRCode, { QRCodeCanvas } from 'qrcode.react';
+import { QRCodeCanvas } from 'qrcode.react';
 
 interface TicketCardProps {
   ticket: {
