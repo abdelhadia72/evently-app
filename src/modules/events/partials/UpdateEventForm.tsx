@@ -3,14 +3,13 @@ import UpdateCrudItemForm from '@common/components/partials/UpdateCrudItemForm';
 import Routes from '@common/defs/routes';
 import { Event, UpdateEventInput } from '@modules/events/defs/types';
 import useEvents from '@modules/events/hooks/api/useEvents';
-import { Grid, MenuItem, Box, Button, FormHelperText, Typography } from '@mui/material';
+import { Grid, MenuItem } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import * as Yup from 'yup';
 import dayjs from 'dayjs';
 import { useSnackbar } from '@common/contexts/SnackbarProvider';
 import { useRouter } from 'next/router';
 import { ItemResponse } from '@common/hooks/useItems';
-import { Controller } from 'react-hook-form';
 
 interface UpdateEventFormProps {
   item: Event;
@@ -27,8 +26,9 @@ const CATEGORIES = [
 ];
 
 const STATUS_OPTIONS = [
-  { value: 'active', label: 'active' },
-  { value: 'inactive', label: 'inactive' },
+  { value: 'draft', label: 'Draft' },
+  { value: 'published', label: 'Published' },
+  { value: 'cancelled', label: 'Cancelled' },
 ];
 
 const UpdateEventForm = (props: UpdateEventFormProps) => {
@@ -70,19 +70,7 @@ const UpdateEventForm = (props: UpdateEventFormProps) => {
     endTime: Yup.string().required(t('common:field_required')),
     category: Yup.string().required(t('common:field_required')),
     status: Yup.string().required(t('common:field_required')),
-    image: Yup.mixed()
-      .test('fileSize', t('common:file_too_large'), (value: File | null) => {
-        if (!value) {
-          return true;
-        }
-        return value.size <= 3 * 1024 * 1024;
-      })
-      .test('fileType', t('common:invalid_file_type'), (value: File | null) => {
-        if (!value) {
-          return true;
-        }
-        return ['image/jpeg', 'image/png', 'image/gif'].includes(value.type);
-      }),
+    imageUrl: Yup.string().url(t('common:invalid_url')),
   });
 
   const defaultValues: UpdateEventInput = {
@@ -97,10 +85,14 @@ const UpdateEventForm = (props: UpdateEventFormProps) => {
     endTime: dayjs(item.endDate).format('HH:mm'),
     category: item.category,
     status: item.status,
-    image: null,
+    imageUrl: item.imageUrl,
   };
 
-  const onPostSubmit = async (_data: UpdateEventInput, response: ItemResponse<Event>) => {
+  const onPostSubmit = async (
+    data: UpdateEventInput,
+    response: ItemResponse<Event>
+    // methods: UseFormReturn<UpdateEventInput>
+  ) => {
     if (response.success) {
       snackbar.enqueueSnackbar(t('common:item_updated_successfully'), { variant: 'success' });
       router.push(Routes.Events.ReadAll);
@@ -112,28 +104,16 @@ const UpdateEventForm = (props: UpdateEventFormProps) => {
   };
 
   const handleSubmit = (data: UpdateEventInput) => {
-    const formData = new FormData();
-
-    (Object.keys(data) as Array<keyof UpdateEventInput>).forEach((key) => {
-      if (key !== 'image' && key !== 'startTime' && key !== 'endTime') {
-        formData.append(key, String(data[key]));
-      }
-    });
-
-    // Append combined date and time
-    formData.append('startDate', `${data.startDate} ${data.startTime}`);
-    formData.append('endDate', `${data.endDate} ${data.endTime}`);
-
-    // Append image if exists
-    if (data.image) {
-      formData.append('image', data.image);
-    }
+    const updatedData = {
+      ...data,
+      startDate: `${data.startDate} ${data.startTime}`,
+      endDate: `${data.endDate} ${data.endTime}`,
+    };
+    delete updatedData.startTime;
+    delete updatedData.endTime;
 
     return {
-      data: formData,
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+      data: updatedData,
     };
   };
 
@@ -180,80 +160,8 @@ const UpdateEventForm = (props: UpdateEventFormProps) => {
             ))}
           </RHFSelect>
         </Grid>
-        <Grid item xs={12}>
-          <Controller
-            name="image"
-            render={({ field: { onChange, value }, fieldState: { error } }) => (
-              <Box>
-                <input
-                  accept="image/*"
-                  type="file"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      onChange(file);
-                    }
-                  }}
-                  style={{ display: 'none' }}
-                  id="event-image-upload"
-                />
-                <label htmlFor="event-image-upload">
-                  <Button
-                    variant="outlined"
-                    component="span"
-                    fullWidth
-                    sx={{
-                      height: '200px',
-                      border: '1px dashed',
-                      borderColor: error ? 'error.main' : 'divider',
-                      borderRadius: 1,
-                    }}
-                  >
-                    {(() => {
-                      if (value) {
-                        return (
-                          <Box
-                            component="img"
-                            src={URL.createObjectURL(value)}
-                            alt="Preview"
-                            sx={{
-                              maxHeight: '180px',
-                              maxWidth: '100%',
-                              objectFit: 'contain',
-                            }}
-                          />
-                        );
-                      }
-                      if (item.imageUrl) {
-                        return (
-                          <Box
-                            component="img"
-                            src={item.imageUrl}
-                            alt="Current"
-                            sx={{
-                              maxHeight: '180px',
-                              maxWidth: '100%',
-                              objectFit: 'contain',
-                            }}
-                          />
-                        );
-                      }
-                      return (
-                        <Typography color="textSecondary">
-                          {t('event:upload_image')}
-                          <br />
-                          <Typography variant="caption" component="span">
-                            {t('common:max_file_size', { size: '3MB' })}
-                          </Typography>
-                        </Typography>
-                      );
-                    })()}
-                  </Button>
-                </label>
-                {error && <FormHelperText error>{error.message}</FormHelperText>}
-              </Box>
-            )}
-          />
+        <Grid item xs={12} md={6}>
+          <RHFTextField name="imageUrl" label={t('event:imageUrl')} type="url" />
         </Grid>
         <Grid item xs={12} md={6}>
           <RHFTextField

@@ -23,7 +23,7 @@ const CATEGORIES = [
 
 const STATUS_OPTIONS = [
   { value: 'active', label: 'active' },
-  { value: 'inactive', label: 'inactive' },
+  { value: 'draft', label: 'draft' },
 ];
 
 const CreateEventForm = () => {
@@ -105,18 +105,27 @@ const CreateEventForm = () => {
   const handleSubmit = (data: CreateEventInput) => {
     const formData = new FormData();
 
-    Object.keys(data).forEach((key) => {
-      if (key !== 'image' && key !== 'startTime' && key !== 'endTime') {
-        formData.append(key, data[key]);
-      }
-    });
+    const startDateTime = `${data.startDate}T${data.startTime}:00`;
+    const endDateTime = `${data.endDate}T${data.endTime}:00`;
 
-    formData.append('startDate', `${data.startDate} ${data.startTime}`);
-    formData.append('endDate', `${data.endDate} ${data.endTime}`);
+    formData.append('title', data.title);
+    formData.append('description', data.description);
+    formData.append('location', data.location);
+    formData.append('maxAttendees', String(data.maxAttendees));
+    formData.append('category', data.category);
+    formData.append('status', data.status);
+
+    formData.append('startDate', startDateTime);
+    formData.append('endDate', endDateTime);
 
     if (data.image) {
       formData.append('image', data.image);
     }
+
+    console.log('Form Data Contents:');
+    formData.forEach((value, key) => {
+      console.log(`${key}:`, value);
+    });
 
     return {
       data: formData,
@@ -160,7 +169,7 @@ const CreateEventForm = () => {
           </RHFSelect>
         </Grid>
         <Grid item xs={12} md={6}>
-          <RHFSelect name="status" label={t('event:status')}>
+          <RHFSelect name="status" label={t('event:status')} defaultValue={STATUS_OPTIONS[0].value}>
             {STATUS_OPTIONS.map((option) => (
               <MenuItem key={option.value} value={option.value}>
                 {t(option.label)}
