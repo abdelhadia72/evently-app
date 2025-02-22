@@ -30,7 +30,6 @@ export interface CrudApiRoutes {
   ReadOne: string;
   UpdateOne: string;
   DeleteOne: string;
-  [key: string]: string;
 }
 
 export enum CRUD_ACTION {

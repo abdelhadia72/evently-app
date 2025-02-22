@@ -15,6 +15,31 @@ Welcome to Evently, your comprehensive solution for event management and ticket 
 - Email: admin@evently.com
 - Password: admin
 
+# 🛠 Installation & Setup
+
+Installation Steps
+
+Clone the repository:
+
+```
+git clone https://github.com/abdelhadia72/evently-app.git
+cd evently-app
+```
+
+Install dependencies:
+
+```
+npm install
+```
+
+Start the server:
+
+```
+npm run dev
+```
+
+Open `http://localhost:3000` in your browser and login
+
 ## 📍 Main Routes
 
 ### Authentication Routes 🔐
