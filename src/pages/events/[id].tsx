@@ -11,113 +11,42 @@ import {
   Chip,
   Paper,
   Avatar,
-  Divider,
   useTheme,
   alpha,
 } from '@mui/material';
 import { Event } from '@modules/events/defs/types';
 import useEvents from '@modules/events/hooks/api/useEvents';
+import useAuth from '@modules/auth/hooks/api/useAuth';
+import useTickets from '@modules/tickets/hooks/api/useTickets';
 import dayjs from 'dayjs';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
-  FaTicketAlt,
-  FaHeart,
-  FaRegHeart,
-  FaShare,
-  FaRegCalendarAlt,
-  FaVideo,
+  FaClock,
   FaMapMarkedAlt,
+  FaRegCalendarAlt,
+  FaTag,
+  FaTicketAlt,
   FaUsers,
 } from 'react-icons/fa';
-import EventCard from '@modules/landing/components/EventCard';
-import useAuth from '@modules/auth/hooks/api/useAuth';
 
 const EventPage: NextPage = () => {
   const router = useRouter();
   const { user } = useAuth();
   const theme = useTheme();
-  const { id: eventId } = router.query;
+  const eventId = router.query.id as string;
+
   const [event, setEvent] = useState<Event | null>(null);
-  const [relatedEvents, setRelatedEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isLiked, setIsLiked] = useState(false);
-  const { readOne, readAll, attend, cancelAttendance, getAttendees } = useEvents();
-  const [attendToEvent, setAttendToEvent] = useState<boolean>(false);
-  const [attendees, setAttendees] = useState<number[]>([]);
-
-  useEffect(() => {
-    const fetchAttendees = async () => {
-      if (eventId) {
-        try {
-          const attendeesData = (await getAttendees(eventId)) as { id: number }[];
-          const attendeeIds = attendeesData.map((attendee: { id: number }) => attendee.id);
-          setAttendees(attendeeIds || []);
-          // Update attendToEvent status after fetching attendees
-          if (user) {
-            setAttendToEvent(attendeeIds.includes(user.id));
-          }
-        } catch (error) {
-          console.error('Error fetching attendees:', error);
-        }
-      }
-    };
-
-    fetchAttendees();
-  }, [eventId, user]); // Add user to dependencies
-
-  const handleAttend = async () => {
-    if (!user) {
-      router.push('/auth/login');
-      return;
-    }
-
-    await attend(eventId);
-    // Refetch attendees after attending
-    const attendeesData = (await getAttendees(eventId)) as { id: number }[];
-    const attendeeIds = attendeesData.map((attendee: { id: number }) => attendee.id);
-    setAttendees(attendeeIds);
-    setAttendToEvent(true);
-  };
-
-  const handleCancelAttendance = async () => {
-    if (!user) {
-      router.push('/auth/login');
-      return;
-    }
-
-    await cancelAttendance(eventId);
-    // Refetch attendees after canceling
-    const attendeesData = (await getAttendees(eventId)) as { id: number }[];
-    const attendeeIds = attendeesData.map((attendee: { id: number }) => attendee.id);
-    setAttendees(attendeeIds);
-    setAttendToEvent(false);
-  };
-
-  useEffect(() => {
-    if (user && attendees.includes(user.id)) {
-      setAttendToEvent(true);
-    } else {
-      setAttendToEvent(false);
-    }
-  }, [user, attendees]);
-
-  console.log('user id is ', user && user.id);
-  console.log('attendees id is ', event && attendees);
+  const { readOne } = useEvents();
+  const { getEventTickets, bookTicket, cancelTicket } = useTickets();
+  const [hasActiveTicket, setHasActiveTicket] = useState(false);
 
   useEffect(() => {
     const fetchEvent = async () => {
-      if (eventId && !Array.isArray(eventId)) {
+      if (eventId) {
         try {
           const response = await readOne(Number(eventId));
           if (response.success && response.data) {
             setEvent(response.data);
-            const allEventsResponse = await readAll();
-            if (allEventsResponse.success && allEventsResponse.data.items) {
-              const filtered = allEventsResponse.data.items
-                .filter((e) => e.id !== Number(eventId))
-                .slice(0, 4);
-              setRelatedEvents(filtered);
-            }
           }
         } catch (error) {
           console.error('Error fetching event:', error);
@@ -130,290 +59,221 @@ const EventPage: NextPage = () => {
     fetchEvent();
   }, [eventId]);
 
+  useEffect(() => {
+    const checkUserTicket = async () => {
+      if (eventId && user) {
+        const response = await getEventTickets(eventId);
+        if (response.success && response.data.data) {
+          const userTicket = response.data.data.find((ticket) => ticket.userId === user.id);
+          setHasActiveTicket(userTicket);
+        }
+      }
+    };
+
+    checkUserTicket();
+  }, [eventId, user, hasActiveTicket]);
+
+  const handleTicketAction = async () => {
+    if (!user) {
+      router.push('/auth/login');
+      return;
+    }
+
+    try {
+      if (hasActiveTicket) {
+        const response = await cancelTicket(eventId);
+        if (response.success) {
+          setHasActiveTicket(false);
+        }
+      } else {
+        const response = await bookTicket(eventId);
+        if (response.success) {
+          setHasActiveTicket(true);
+        }
+      }
+    } catch (error) {
+      console.error('Ticket operation failed:', error);
+    }
+  };
+
   if (loading || !event) {
-    return <LoadingScreen />;
+    return (
+      <Box
+        sx={{
+          height: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          bgcolor: 'background.default',
+        }}
+      >
+        <Typography variant="h6">Loading event details...</Typography>
+      </Box>
+    );
   }
 
   return (
-    <AnimatePresence>
-      <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
-        <Box
-          sx={{
-            position: 'relative',
-            minHeight: '600px',
-            background: `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.5)), url(${
-              event.imageUrl || '/placeholder.jpg'
-            })`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            display: 'flex',
-            alignItems: 'center',
-            pt: 8,
-            pb: 4,
-          }}
-        >
-          <Container maxWidth="lg">
-            <Grid container spacing={4}>
-              <Grid item xs={12} md={8}>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <Box sx={{ color: 'white' }}>
-                    <Stack direction="row" spacing={1} sx={{ mb: 3 }}>
-                      <Chip
-                        icon={<FaVideo style={{ fontSize: 16 }} />}
-                        label={event.status === 'online' ? 'Online Event' : 'In-Person Event'}
-                        sx={{ bgcolor: 'primary.main', color: 'white', px: 2 }}
-                      />
-                      <Chip label={event.category} sx={{ bgcolor: alpha('#fff', 0.4), px: 2 }} />
-                    </Stack>
-
-                    <Typography variant="h2" sx={{ mb: 4, fontWeight: 800 }}>
-                      {event.title}
-                    </Typography>
-
-                    <Stack spacing={3}>
-                      <InfoRow
-                        icon={<FaRegCalendarAlt />}
-                        primary={dayjs(event.startDate).format('dddd, MMMM D, YYYY')}
-                        secondary={`${dayjs(event.startDate).format('h:mm A')} - ${dayjs(
-                          event.endDate
-                        ).format('h:mm A')}`}
-                      />
-                      <InfoRow
-                        icon={<FaMapMarkedAlt />}
-                        primary={event.location}
-                        secondary="View on map"
-                      />
-                      <InfoRow
-                        icon={<FaUsers />}
-                        primary={`${event.maxAttendees} spots remaining`}
-                        secondary="Limited availability"
-                      />
-                    </Stack>
-                  </Box>
-                </motion.div>
-              </Grid>
-
-              <Grid item xs={12} md={4}>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  <Paper sx={{ p: 3, borderRadius: 2 }}>
-                    <Stack spacing={3}>
-                      <Box>
-                        <Typography variant="h5" fontWeight={700}>
-                          Free
-                        </Typography>
-                        <Typography color="text.secondary">General Admission</Typography>
-                      </Box>
-
-                      {!attendToEvent ? (
-                        <Button
-                          onClick={handleAttend}
-                          fullWidth
-                          size="large"
-                          variant="contained"
-                          startIcon={<FaTicketAlt style={{ fontSize: 18 }} />}
-                          sx={{
-                            py: 1.5,
-                            fontWeight: 600,
-                          }}
-                        >
-                          Join Event
-                        </Button>
-                      ) : (
-                        <Button
-                          onClick={handleCancelAttendance}
-                          fullWidth
-                          size="large"
-                          color="error"
-                          variant="outlined"
-                          startIcon={<FaTicketAlt style={{ fontSize: 18 }} />}
-                          sx={{
-                            py: 1.5,
-                            fontWeight: 600,
-                          }}
-                        >
-                          Cancel Ticket
-                        </Button>
-                      )}
-                      <Box sx={{ textAlign: 'center' }}>
-                        <Button startIcon={<FaShare style={{ fontSize: 16 }} />} sx={{ mr: 1 }}>
-                          Share
-                        </Button>
-                        <Button
-                          startIcon={
-                            isLiked ? (
-                              <FaHeart style={{ fontSize: 16 }} />
-                            ) : (
-                              <FaRegHeart style={{ fontSize: 16 }} />
-                            )
-                          }
-                          onClick={() => setIsLiked(!isLiked)}
-                          color={isLiked ? 'error' : 'inherit'}
-                        >
-                          Save
-                        </Button>
-                      </Box>
-                    </Stack>
-                  </Paper>
-                </motion.div>
-              </Grid>
-            </Grid>
-          </Container>
-        </Box>
-
-        <Container maxWidth="lg" sx={{ py: 8 }}>
-          <Grid container spacing={4}>
-            <Grid item xs={12} md={8}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-              >
-                <Paper sx={{ p: 4, mb: 4, borderRadius: 2 }}>
-                  <Typography variant="h5" gutterBottom fontWeight={700}>
-                    About this Event
-                  </Typography>
-                  <Typography color="text.secondary" sx={{ whiteSpace: 'pre-line', mb: 4 }}>
-                    {event.description}
-                  </Typography>
-
-                  <Divider sx={{ my: 4 }} />
-
-                  <Typography variant="h6" gutterBottom>
-                    Event Tags
-                  </Typography>
-                  <Stack direction="row" flexWrap="wrap" gap={1}>
-                    {['Technology', 'Workshop', 'Networking', 'Career'].map((tag) => (
-                      <Chip
-                        key={tag}
-                        label={tag}
-                        sx={{
-                          bgcolor: alpha(theme.palette.primary.main, 0.1),
-                          color: 'primary.main',
-                        }}
-                      />
-                    ))}
-                  </Stack>
-                </Paper>
-              </motion.div>
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 }}
-              >
-                <Paper sx={{ p: 3, mb: 4, borderRadius: 2 }}>
-                  <Typography variant="h6" gutterBottom fontWeight={700}>
-                    Location
-                  </Typography>
-                  <Box
-                    sx={{
-                      height: 200,
-                      mb: 2,
-                      bgcolor: 'grey.100',
-                      borderRadius: 1,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    Map Component Here
-                  </Box>
-                  <Typography gutterBottom>{event.location}</Typography>
-                  <Button fullWidth variant="outlined">
-                    View Map
-                  </Button>
-                </Paper>
-
-                <Paper sx={{ p: 3, borderRadius: 2 }}>
-                  <Typography variant="h6" gutterBottom fontWeight={700}>
-                    Organizer
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                    <Avatar sx={{ width: 50, height: 50, bgcolor: 'primary.main' }}>
-                      {event.title[0]}
-                    </Avatar>
-                    <Box>
-                      <Typography variant="subtitle1" fontWeight={600}>
-                        {event.organizer.username || 'Event Organizer'}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {event.organizer.hostedEvents || 'Event Organizer'}
-                      </Typography>
-                    </Box>
-                  </Box>
-                  <Button fullWidth variant="outlined">
-                    Contact Organizer
-                  </Button>
-                </Paper>
-              </motion.div>
-            </Grid>
-          </Grid>
-        </Container>
-
-        {relatedEvents.length > 0 && (
-          <Box sx={{ bgcolor: 'grey.50', py: 8 }}>
-            <Container maxWidth="lg">
-              <Typography variant="h4" gutterBottom sx={{ mb: 4 }} fontWeight={700}>
-                Similar Events You May Like
-              </Typography>
-              <Grid container spacing={4} sx={{ mb: 4 }}>
-                {relatedEvents.slice(0, 4).map((relatedEvent) => (
-                  <EventCard
-                    id={relatedEvent.id.toString()}
-                    title={relatedEvent.title}
-                    image="https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-1.2.1&auto=format&fit=crop&w=2100&q=80"
-                    date={dayjs(relatedEvent.startDate).format('MMM D, YYYY')}
-                    location={relatedEvent.location}
-                    category={relatedEvent.category}
-                    price="Free"
-                    attendees={relatedEvent.maxAttendees}
-                  />
-                ))}
-              </Grid>
-            </Container>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      {/* Hero Section with Image */}
+      <Box
+        sx={{
+          position: 'relative',
+          height: { xs: '300px', md: '500px' },
+          background: `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.5)), url(${
+            event.imageUrl || '/images/photos/placeholder.jpg'
+          })`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          display: 'flex',
+          alignItems: 'flex-end',
+          mb: 4,
+        }}
+      >
+        <Container maxWidth="lg" sx={{ pb: 6 }}>
+          <Box sx={{ color: 'white', maxWidth: '800px' }}>
+            <Chip
+              label={event.category}
+              sx={{
+                bgcolor: 'primary.main',
+                color: 'white',
+                mb: 2,
+                textTransform: 'capitalize',
+              }}
+            />
+            <Typography
+              variant="h2"
+              sx={{
+                fontWeight: 800,
+                mb: 2,
+                fontSize: { xs: '2rem', md: '3.5rem' },
+              }}
+            >
+              {event.title}
+            </Typography>
+            <Stack direction="row" spacing={3} sx={{ mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ color: 'primary.main' }}>
+                  <FaRegCalendarAlt size={20} />
+                </Box>
+                <Typography>{dayjs(event.startDate).format('MMM D, YYYY')}</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{ color: 'primary.main' }}>
+                  <FaMapMarkedAlt size={20} />
+                </Box>
+                <Typography>{event.location}</Typography>
+              </Box>
+            </Stack>
           </Box>
-        )}
+        </Container>
       </Box>
-    </AnimatePresence>
+
+      <Container maxWidth="lg">
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={8}>
+            <Paper sx={{ p: 4, mb: 4, borderRadius: 2 }}>
+              <Typography variant="h5" gutterBottom fontWeight={700}>
+                About This Event
+              </Typography>
+              <Typography
+                sx={{
+                  color: 'text.secondary',
+                  whiteSpace: 'pre-line',
+                  mb: 4,
+                }}
+              >
+                {event.description}
+              </Typography>
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: 2,
+                  flexWrap: 'wrap',
+                  mt: 3,
+                }}
+              >
+                <Chip
+                  icon={<FaUsers />}
+                  label={`${event.maxAttendees} spots`}
+                  sx={{ bgcolor: alpha(theme.palette.primary.main, 0.1) }}
+                />
+                <Chip
+                  icon={<FaClock />}
+                  label={`${dayjs(event.startDate).format('h:mm A')} - ${dayjs(
+                    event.endDate
+                  ).format('h:mm A')}`}
+                  sx={{ bgcolor: alpha(theme.palette.primary.main, 0.1) }}
+                />
+                <Chip
+                  icon={<FaTag />}
+                  label={event.status}
+                  sx={{ bgcolor: alpha(theme.palette.success.main, 0.1) }}
+                />
+              </Box>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <Paper
+              sx={{
+                p: 3,
+                borderRadius: 2,
+                mb: 4,
+                background: `linear-gradient(135deg, ${alpha(
+                  theme.palette.primary.main,
+                  0.05
+                )}, ${alpha(theme.palette.primary.light, 0.1)})`,
+              }}
+            >
+              <Stack spacing={3}>
+                <Box>
+                  <Typography variant="h5" fontWeight={700}>
+                    Free
+                  </Typography>
+                  <Typography color="text.secondary">General Admission</Typography>
+                </Box>
+                <Button
+                  onClick={handleTicketAction}
+                  fullWidth
+                  variant={hasActiveTicket ? 'outlined' : 'contained'}
+                  color={hasActiveTicket ? 'error' : 'primary'}
+                  startIcon={<FaTicketAlt />}
+                >
+                  {hasActiveTicket ? 'Cancel Ticket' : 'Book Ticket'}
+                </Button>
+              </Stack>
+            </Paper>
+
+            <Paper sx={{ p: 3, borderRadius: 2 }}>
+              <Typography variant="h6" gutterBottom fontWeight={700}>
+                Organizer
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                <Avatar
+                  sx={{
+                    width: 50,
+                    height: 50,
+                    bgcolor: 'primary.main',
+                    fontSize: '1.5rem',
+                  }}
+                >
+                  {event.organizer.email[0].toUpperCase()}
+                </Avatar>
+                <Box>
+                  <Typography variant="subtitle1" fontWeight={600}>
+                    {event.organizer.email}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Event Organizer
+                  </Typography>
+                </Box>
+              </Box>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
   );
 };
-
-const InfoRow = ({
-  icon,
-  primary,
-  secondary,
-}: {
-  icon: React.ReactNode;
-  primary: string;
-  secondary: string;
-}) => (
-  <Box sx={{ display: 'flex', gap: 2 }}>
-    <Box sx={{ color: 'primary.main', mt: 0.5 }}>{icon}</Box>
-    <Box>
-      <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'white' }}>
-        {primary}
-      </Typography>
-      <Typography variant="body2" sx={{ color: alpha('#fff', 0.7) }}>
-        {secondary}
-      </Typography>
-    </Box>
-  </Box>
-);
-
-const LoadingScreen = () => (
-  <Box sx={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-    <Typography>Loading...</Typography>
-  </Box>
-);
 
 export default EventPage;
