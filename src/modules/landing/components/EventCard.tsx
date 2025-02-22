@@ -14,19 +14,23 @@ import {
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PersonIcon from '@mui/icons-material/Person';
+import * as dateUtils from '@common/utils/date';
 
 interface EventCardProps {
-  id: string;
+  id: number;
   title: string;
-  image: string;
-  date: string;
+  imageUrl: string | null;
+  startDate: string;
+  endDate: string;
   location: string;
   category: string;
-  price: string;
-  attendees?: number;
+  maxAttendees: number;
 }
 
 const EventCard = (event: EventCardProps) => {
+  const formattedDate = dateUtils.formatDate(event.startDate);
+  const fallbackImage = '/images/event-placeholder.jpg';
+
   return (
     <Grid item xs={12} sm={6} md={3}>
       <Card
@@ -50,7 +54,7 @@ const EventCard = (event: EventCardProps) => {
         <Box sx={{ position: 'relative', overflow: 'hidden', pt: '60%' }}>
           <CardMedia
             component="img"
-            image={event.image}
+            image={event.imageUrl || fallbackImage}
             alt={event.title}
             sx={{
               position: 'absolute',
@@ -122,7 +126,7 @@ const EventCard = (event: EventCardProps) => {
                   fontSize: '0.875rem',
                 }}
               >
-                {event.date}
+                {formattedDate}
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -143,26 +147,24 @@ const EventCard = (event: EventCardProps) => {
                 {event.location}
               </Typography>
             </Box>
-            {event.attendees && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <PersonIcon
-                  fontSize="small"
-                  sx={{
-                    color: 'text.secondary',
-                    fontSize: '1rem',
-                  }}
-                />
-                <Typography
-                  variant="body2"
-                  sx={{
-                    color: 'text.secondary',
-                    fontSize: '0.875rem',
-                  }}
-                >
-                  {event.attendees} attending
-                </Typography>
-              </Box>
-            )}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <PersonIcon
+                fontSize="small"
+                sx={{
+                  color: 'text.secondary',
+                  fontSize: '1rem',
+                }}
+              />
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary',
+                  fontSize: '0.875rem',
+                }}
+              >
+                {event.maxAttendees} max attendees
+              </Typography>
+            </Box>
           </Stack>
           <Box
             sx={{
@@ -176,16 +178,6 @@ const EventCard = (event: EventCardProps) => {
               gap: 2,
             }}
           >
-            <Typography
-              variant="subtitle1"
-              sx={{
-                color: 'primary.main',
-                fontWeight: 600,
-                fontSize: '1rem',
-              }}
-            >
-              {event.price}
-            </Typography>
             <Link
               href={`/events/${event.id}`}
               passHref
@@ -207,7 +199,7 @@ const EventCard = (event: EventCardProps) => {
                   },
                 }}
               >
-                Get Tickets
+                View Details
               </Button>
             </Link>
           </Box>

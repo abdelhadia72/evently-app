@@ -9,7 +9,10 @@ const ApiRoutes = {
   Auth,
   Users,
   Uploads,
-  Events,
+  Events: {
+    ...Events,
+    search: '/events/search',
+  },
   Tickets: TicketsRoutes,
   Posts,
 };

@@ -3,82 +3,75 @@ import useItems, { UseItemsOptions, defaultOptions } from '@common/hooks/useItem
 import { Event, CreateEventInput, UpdateEventInput } from '@modules/events/defs/types';
 import useApi from '@common/hooks/useApi';
 
+interface EventsResponse {
+  success: boolean;
+  data: {
+    items: Event[];
+    total: number;
+    currentPage: number;
+    perPage: number;
+    lastPage: number;
+  };
+}
+
 const useEvents = (opts: UseItemsOptions = defaultOptions) => {
   const apiRoutes = ApiRoutes.Events;
   const fetchApi = useApi();
-  const { mutate: mutateEvents, ...rest } = useItems<Event, CreateEventInput, UpdateEventInput>(
-    apiRoutes,
-    opts
-  );
+  const {
+    mutate: mutateEvents,
+    readAll: getItems,
+    ...rest
+  } = useItems<Event, CreateEventInput, UpdateEventInput>(apiRoutes, opts);
 
-  const attend = async (eventId: string | string[]) => {
+  const searchEvents = async (query: string, category?: string) => {
     try {
-      const response = await fetchApi(ApiRoutes.Events.Attend.replace('{id}', eventId.toString()), {
-        method: 'POST',
+      const searchParams = new URLSearchParams();
+      if (query) {
+        searchParams.append('title', query);
+      }
+      if (category && category !== 'All Events') {
+        searchParams.append('category', category);
+      }
+
+      const url = `${apiRoutes.search}?${searchParams.toString()}`;
+      console.log('Search URL:', url);
+
+      const response = await fetchApi<EventsResponse>(url, {
+        method: 'GET',
         displayProgress: true,
-        displaySuccess: true,
       });
 
-      if (response.success) {
-        mutateEvents();
-      }
-
-      return response;
+      console.log('Search response:', response);
+      return response?.success && response?.data?.items ? response.data.items : [];
     } catch (error) {
-      return { success: false, message: 'Failed to attend event' };
+      console.error('Search events error:', error);
+      return [];
     }
   };
 
-  const getAttendees = async (eventId: string | string[]) => {
+  const getEventItems = async () => {
     try {
-      const response = await fetchApi(
-        ApiRoutes.Events.GetAttendees.replace('{id}', eventId.toString()),
-        {
-          method: 'GET',
-          displayProgress: true,
-          displaySuccess: false,
-        }
-      );
+      const response = await getItems();
+      console.log('GetItems response:', response);
 
-      if (response.success) {
-        return response.data;
+      if (response?.data?.items) {
+        return response.data.items;
       }
-
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching attendees:', error);
-      return { success: false, message: 'Failed to getting attendance' };
-    }
-  };
-
-  const cancelAttendance = async (eventId: string | string[]) => {
-    try {
-      const response = await fetchApi(
-        ApiRoutes.Events.CancelAttendance.replace('{id}', eventId.toString()),
-        {
-          method: 'DELETE',
-          displayProgress: true,
-          displaySuccess: true,
-        }
-      );
-
-      if (response.success) {
-        mutateEvents();
+      if (response?.data?.data?.items) {
+        return response.data.data.items;
       }
-
-      return response;
+      return [];
     } catch (error) {
-      console.error('Error canceling attendance:', error);
-      return { success: false, message: 'Failed to cancel attendance' };
+      console.error('Error getting items:', error);
+      return [];
     }
   };
 
   return {
     ...rest,
-    mutate: mutateEvents, // explicitly include mutate in return
-    attend,
-    cancelAttendance,
-    getAttendees,
+    mutate: mutateEvents,
+    searchEvents,
+    getItems: getEventItems,
   };
 };
 
