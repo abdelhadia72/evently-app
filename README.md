@@ -1,26 +1,89 @@
-## Getting Started
+# 🎉 Evently - Event Management Platform
 
-# Tech Stack
+Welcome to Evently, your comprehensive solution for event management and ticket handling! 🌟
 
-- MUI
-- Next
-- Emotion
-- ESLint
-- Prettier
-- SWR
+## 🚀 Features
 
-# Setup
+- 👥 User Authentication & Management
+- 📅 Event Creation & Management
+- 🎫 Ticket Booking & Verification
+- 📱 Dashboard for Admins & Organizers
+- 📨 OTP Verification System
 
-## VSCode
+## 🔑 Default Admin Access
 
-- Install Prettier
-- Install ESLint
+- Email: admin@evently.com
+- Password: admin
 
-## Common code
+## 📍 Main Routes
 
-For each web project using an APP and an ADMIN using some common code, please create a npm package (check the starter in gitlab) and add it as a dependency to the web project.
+### Authentication Routes 🔐
 
-# Important
+- Login: `/auth/login`
+- Register: `/auth/register`
+- Password Reset: `/auth/request-password-reset`
+- Verify Account (OTP): `/auth/verify`
 
-- Regularly, and especially before pushing, do a `npm run lint` to check that everything is ok.
-- For imports, you can use absolute paths
+### Dashboard Routes 📊
+
+- Main Dashboard: `/dashboard`
+- Events Management: `/dashboard/events`
+- Users Management: `/dashboard/users`
+- Overview: `/tickets`
+
+### Event Routes 🎪
+
+- Event List: `/dashboard/events`
+- Create Event: `/dashboard/events/create`
+- Event Details: `/{id}`
+- Update Event: `/dashboard/events/{id}`
+
+### Ticket Management 🎫
+
+- List All Tickets: `/tickets`
+- User Tickets: `/auth/tickets`
+- Event Tickets: `/events/{eventId}/tickets`
+- Book Ticket: `/events/{eventId}/tickets`
+- Cancel Ticket: `/events/{eventId}/tickets`
+- Verify Ticket: `/tickets/{ticketId}/verify`
+- Check-in: `/check-in/tickets`
+
+## 👥 User Roles
+
+- Admin: Full system access
+- Organizer: Event management capabilities
+- User: Basic ticket booking and viewing
+
+## 🔍 API Endpoints
+
+### Events API
+
+- Search Events: `/events/search`
+- CRUD Operations: Standard endpoints for event management
+
+### Users API
+
+- User Management: Complete CRUD operations
+- Profile Management: `/me` endpoint for user profile
+
+## 🛠 Getting Started
+
+1. Clone the repository
+2. Install dependencies
+3. Configure your environment variables
+4. Run the application
+5. Access the dashboard using the admin credentials
+
+## 🔐 Security Features
+
+- Role-based access control
+- Protected routes
+- OTP verification system
+- Secure password reset flow
+
+## 💡 Additional Features
+
+- File uploads support
+- Post management system
+- User verification system
+- Ticket verification system
