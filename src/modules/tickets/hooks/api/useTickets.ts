@@ -15,12 +15,14 @@ const useTickets: UseItems<Ticket, CreateTicketInput, UpdateTicketInput> = (
 
   const getUserTickets = async () => {
     try {
+      console.log('Getting user tickets from:', apiRoutes.ListUserTickets);
       const response = await fetchApi(apiRoutes.ListUserTickets, {
         method: 'GET',
         displayProgress: true,
         displaySuccess: false,
       });
-      return response.data;
+      console.log('User tickets response:', response);
+      return response;
     } catch (error) {
       console.error('Error fetching user tickets:', error);
       return { success: false, message: 'Failed to fetch user tickets' };

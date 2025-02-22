@@ -1,29 +1,63 @@
 import { NextPage } from 'next';
 import withAuth, { AUTH_MODE } from '@modules/auth/hocs/withAuth';
 import Routes from '@common/defs/routes';
-import { Box, Card, Grid, Typography } from '@mui/material';
+import {
+  Box,
+  Card,
+  Grid,
+  Typography,
+  Chip,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  CircularProgress,
+} from '@mui/material';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import PageHeader from '@common/components/lib/partials/PageHeader';
 import FormProvider, { RHFTextField } from '@common/components/lib/react-hook-form';
 import { useForm } from 'react-hook-form';
-import { LoadingButton } from '@mui/lab';
+import { LoadingButton, Pagination } from '@mui/lab';
 import useAuth from '@modules/auth/hooks/api/useAuth';
 import { LockOpen } from '@mui/icons-material';
 import useUsers, { UpdateOneInput } from '@modules/users/hooks/api/useUsers';
 import { format } from 'date-fns';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import useTickets from '@modules/tickets/hooks/api/useTickets';
+import TicketCard from '@modules/tickets/components/TicketCard';
 
 const MyProfile: NextPage = () => {
   const { user } = useAuth();
   const { updateOne } = useUsers();
+  const ticketsHook = useTickets();
+  const [tickets, setTickets] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    console.debug('[MyProfile] Mount with auth state:', {
-      user,
-      isAuthenticated: !!user,
-      pathname: window.location.pathname,
-    });
+    const fetchTickets = async () => {
+      setIsLoading(true);
+      try {
+        console.log('Fetching tickets...');
+        const response = await ticketsHook.getUserTickets();
+        console.log('Tickets response:', response);
+
+        if (response?.data?.data) {
+          setTickets(response.data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching tickets:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchTickets();
+    }
   }, [user]);
 
   if (!user) {
@@ -64,6 +98,36 @@ const MyProfile: NextPage = () => {
     }
     await updateOne(user.id, data, { displayProgress: true, displaySuccess: true });
   };
+
+  const renderTicketsSection = () => (
+    <Box sx={{ mt: 4 }}>
+      <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
+        My Tickets
+      </Typography>
+      {isLoading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <>
+          {!tickets || tickets.length === 0 ? (
+            <Typography color="text.secondary" align="center">
+              No tickets found
+            </Typography>
+          ) : (
+            <Grid container spacing={2}>
+              {tickets.map((ticket) => (
+                <Grid item xs={12} md={6} lg={4} key={ticket.id}>
+                  <TicketCard ticket={ticket} />
+                </Grid>
+              ))}
+            </Grid>
+          )}
+        </>
+      )}
+    </Box>
+  );
+
   return (
     <>
       <Box sx={{ marginBottom: 4, display: 'flex', justifyContent: 'center' }}>
@@ -137,6 +201,9 @@ const MyProfile: NextPage = () => {
           </Grid>
         </FormProvider>
       </Card>
+
+      {/* Tickets Section */}
+      {renderTicketsSection()}
     </>
   );
 };
