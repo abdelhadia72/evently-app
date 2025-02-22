@@ -1,55 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import { Box, Container, Typography, Grid, Button, Stack, Fade } from '@mui/material';
 import Link from 'next/link';
 import EventCard from '@modules/landing/components/EventCard';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-
-const FakeEvents = [
-  {
-    id: '1',
-    title: 'Tech Conference 2024: Future of AI & Innovation',
-    image:
-      'https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-1.2.1&auto=format&fit=crop&w=2100&q=80',
-    date: 'Mar 15-17, 2024',
-    location: 'San Francisco, CA',
-    category: 'Technology',
-    price: 'From $299',
-    attendees: 1240,
-  },
-  {
-    id: '2',
-    title: 'Summer Music Festival: Beats & Rhythms',
-    image:
-      'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?ixlib=rb-1.2.1&auto=format&fit=crop&w=2100&q=80',
-    date: 'Apr 20-22, 2024',
-    location: 'Austin, TX',
-    category: 'Music',
-    price: 'From $149',
-    attendees: 3500,
-  },
-  {
-    id: '3',
-    title: 'International Food & Wine Expo 2024',
-    image:
-      'https://images.unsplash.com/photo-1555244162-803834f70033?ixlib=rb-1.2.1&auto=format&fit=crop&w=2100&q=80',
-    date: 'May 5-7, 2024',
-    location: 'New York, NY',
-    category: 'Food & Drink',
-    price: 'From $79',
-    attendees: 850,
-  },
-  {
-    id: '4',
-    title: 'Global Business Summit & Networking',
-    image:
-      'https://images.unsplash.com/photo-1591115765373-5207764f72e7?ixlib=rb-1.2.1&auto=format&fit=crop&w=2100&q=80',
-    date: 'Jun 10-12, 2024',
-    location: 'Chicago, IL',
-    category: 'Business',
-    price: 'From $399',
-    attendees: 620,
-  },
-];
+import useEvents from '@modules/events/hooks/api/useEvents';
+import { Event } from '@modules/events/defs/types';
 
 const categories = [
   'All Events',
@@ -62,6 +18,34 @@ const categories = [
 ];
 
 const FeaturedEvents = () => {
+  const router = useRouter();
+  const [featuredEvents, setFeaturedEvents] = useState<Event[]>([]);
+  const { readAll } = useEvents();
+
+  useEffect(() => {
+    const fetchFeaturedEvents = async () => {
+      try {
+        const response = await readAll();
+        if (response?.success && response?.data?.items) {
+          const allEvents = response.data?.items;
+          const shuffled = [...allEvents].sort(() => 0.5 - Math.random());
+          setFeaturedEvents(shuffled.slice(0, 4));
+        }
+      } catch (error) {
+        console.error('Error fetching featured events:', error);
+      }
+    };
+
+    fetchFeaturedEvents();
+  }, []);
+
+  const handleCategoryClick = (category: string) => {
+    router.push({
+      pathname: '/events',
+      query: category !== 'All Events' ? { category } : undefined,
+    });
+  };
+
   return (
     <Box
       sx={{
@@ -154,6 +138,7 @@ const FeaturedEvents = () => {
                 <Button
                   key={category}
                   variant={category === 'All Events' ? 'contained' : 'outlined'}
+                  onClick={() => handleCategoryClick(category)}
                   sx={{
                     borderRadius: 1.5,
                     px: 2,
@@ -186,7 +171,7 @@ const FeaturedEvents = () => {
 
         <Fade in timeout={2000}>
           <Grid container spacing={2.5}>
-            {FakeEvents.map((event) => (
+            {featuredEvents.map((event) => (
               <EventCard key={event.id} {...event} />
             ))}
           </Grid>
