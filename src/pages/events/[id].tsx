@@ -10,7 +10,6 @@ import {
   Stack,
   Chip,
   Paper,
-  Avatar,
   useTheme,
   alpha,
 } from '@mui/material';
@@ -27,6 +26,7 @@ import {
   FaTicketAlt,
   FaUsers,
 } from 'react-icons/fa';
+import EventCard from '@modules/landing/components/EventCard';
 
 const EventPage: NextPage = () => {
   const router = useRouter();
@@ -36,27 +36,40 @@ const EventPage: NextPage = () => {
 
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
-  const { readOne } = useEvents();
+  const { readOne, getItems } = useEvents();
   const { getEventTickets, bookTicket, cancelTicket } = useTickets();
   const [hasActiveTicket, setHasActiveTicket] = useState(false);
+  const [relatedEvents, setRelatedEvents] = useState<Event[]>([]);
 
   useEffect(() => {
-    const fetchEvent = async () => {
+    const fetchEventAndRelated = async () => {
       if (eventId) {
         try {
-          const response = await readOne(Number(eventId));
-          if (response.success && response.data) {
-            setEvent(response.data);
+          setLoading(true);
+          const [eventResponse, allEventsResponse] = await Promise.all([
+            readOne(Number(eventId)),
+            getItems(),
+          ]);
+
+          if (eventResponse?.success && eventResponse?.data) {
+            setEvent(eventResponse.data);
+
+            const events = allEventsResponse || [];
+            const filtered = events.filter((e) => e.id !== Number(eventId));
+            const shuffled = [...filtered].sort(() => 0.5 - Math.random());
+            setRelatedEvents(shuffled.slice(0, 4));
+            console.log('xxx', events);
           }
         } catch (error) {
-          console.error('Error fetching event:', error);
+          console.error('Error fetching event data:', error);
+          setRelatedEvents([]);
         } finally {
           setLoading(false);
         }
       }
     };
 
-    fetchEvent();
+    fetchEventAndRelated();
   }, [eventId]);
 
   useEffect(() => {
@@ -114,7 +127,6 @@ const EventPage: NextPage = () => {
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-      {/* Hero Section with Image */}
       <Box
         sx={{
           position: 'relative',
@@ -243,32 +255,24 @@ const EventPage: NextPage = () => {
                 </Button>
               </Stack>
             </Paper>
+          </Grid>
 
-            <Paper sx={{ p: 3, borderRadius: 2 }}>
-              <Typography variant="h6" gutterBottom fontWeight={700}>
-                Organizer
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                <Avatar
-                  sx={{
-                    width: 50,
-                    height: 50,
-                    bgcolor: 'primary.main',
-                    fontSize: '1.5rem',
-                  }}
-                >
-                  {event.organizer.email[0].toUpperCase()}
-                </Avatar>
-                <Box>
-                  <Typography variant="subtitle1" fontWeight={600}>
-                    {event.organizer.email}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Event Organizer
-                  </Typography>
-                </Box>
+          <Grid item xs={12}>
+            {relatedEvents.length > 0 && (
+              <Box sx={{ mt: 8, mb: 8 }}>
+                <Typography variant="h4" gutterBottom fontWeight={700}>
+                  More Events
+                </Typography>
+                <Typography color="text.secondary" sx={{ mb: 4 }}>
+                  Check out these upcoming events
+                </Typography>
+                <Grid container spacing={3}>
+                  {relatedEvents.map((event) => (
+                    <EventCard key={event.id} {...event} />
+                  ))}
+                </Grid>
               </Box>
-            </Paper>
+            )}
           </Grid>
         </Grid>
       </Container>

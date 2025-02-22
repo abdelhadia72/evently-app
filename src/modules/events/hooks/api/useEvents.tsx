@@ -19,7 +19,8 @@ const useEvents = (opts: UseItemsOptions = defaultOptions) => {
   const fetchApi = useApi();
   const {
     mutate: mutateEvents,
-    readAll: getItems,
+    readAll,
+    readOne,
     ...rest
   } = useItems<Event, CreateEventInput, UpdateEventInput>(apiRoutes, opts);
 
@@ -51,18 +52,45 @@ const useEvents = (opts: UseItemsOptions = defaultOptions) => {
 
   const getEventItems = async () => {
     try {
-      const response = await getItems();
+      const response = await readAll();
       console.log('GetItems response:', response);
 
-      if (response?.data?.items) {
-        return response.data.items;
-      }
-      if (response?.data?.data?.items) {
-        return response.data.data.items;
+      if (response?.success && response?.data?.items) {
+        return response?.data?.items;
       }
       return [];
     } catch (error) {
       console.error('Error getting items:', error);
+      return [];
+    }
+  };
+
+  const getRelatedEvents = async (currentEventId: number) => {
+    try {
+      const response = await readAll();
+      console.log('All events response:', response);
+
+      const allEvents = response?.data?.data?.items || [];
+      if (allEvents.length <= 1) {
+        return [];
+      }
+
+      const currentIndex = allEvents.findIndex((event) => event.id === currentEventId);
+      const relatedEvents = [];
+
+      for (let i = 1; i <= 4; i++) {
+        const nextIndex = (currentIndex + i) % allEvents.length;
+        if (nextIndex !== currentIndex) {
+          relatedEvents.push(allEvents[nextIndex]);
+        }
+        if (relatedEvents.length === 4) {
+          break;
+        }
+      }
+
+      return relatedEvents;
+    } catch (error) {
+      console.error('Error getting related events:', error);
       return [];
     }
   };
@@ -72,6 +100,9 @@ const useEvents = (opts: UseItemsOptions = defaultOptions) => {
     mutate: mutateEvents,
     searchEvents,
     getItems: getEventItems,
+    readOne,
+    readAll,
+    getRelatedEvents,
   };
 };
 
